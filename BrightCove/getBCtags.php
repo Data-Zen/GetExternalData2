@@ -9,13 +9,15 @@ else
 { $a=3;}
 
 if (!empty( $argv[2])) 
-{ $backfill = $argv[2];}
+{ $backfill = $argv[2];
+	}
 else
 { $backfill=0;}
+echo "\n\n backfill: $backfill \n\n"; 
 // Go get last run
 include 'BrightCove/credentials/BrightCoveCredentials.php';
 $connect = pg_connect($BrightCoveReadOnlyCredentials);
-if ($backfill =0)
+if ($backfill ==0)
 {
 $sql= "select isnull(max(dt)-33+$a,getdate()-479)::date maxdt, dateadd(day,1,isnull(max(dt)-33+$a,getdate()-479))::date from public.bc_videos";
 

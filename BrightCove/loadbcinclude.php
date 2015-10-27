@@ -3,9 +3,11 @@
 
 date_default_timezone_set('UTC');//or change to whatever timezone you want
 //phpinfo();
+/*
 echo "CREDENTIALS \n\n\n\n";
 echo $BrightCoveModifyCredentials;
 echo "END CREDENTIALS  \n\n\n\n";
+*/
 $connect = pg_connect($BrightCoveModifyCredentials);
 /*
 $result2 = pg_query($connect, "select isnull(max(dt)+1,getdate()-479)::date maxdt, dateadd(day,1,isnull(max(dt)+1,getdate()-479))::date from public.bc_videos");
