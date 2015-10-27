@@ -81,7 +81,7 @@ else
 
 
 
-$sql=" select isnull(max(created_at)-8,'2014-01-01') from public.zencoder";
+$sql=" select isnull(max(created_at)-3,'2014-01-01') from public.zencoder";
 $result_maxdate = pg_query($connect, $sql);
    while ($row = pg_fetch_array($result_maxdate)) {
      $maxdtinFinaltable= $row[0];
