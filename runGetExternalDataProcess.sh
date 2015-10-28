@@ -15,12 +15,12 @@ while [ $a -le $loop ]
 do
    echo $a
   
-  php ./BrightCove/getBCtags.php $a 1 #For Backfill 
+  #php ./BrightCove/getBCtags.php $a 1 #For Backfill 
 
-  #php ./BrightCove/getBCtags.php $a 0   #For Daily 
+  php ./BrightCove/getBCtags.php $a 0   #For Daily 
   a=`expr $a + 1`
   sleep 5
 done
 
 #Now Get Zencoder
-#php ZenCoder/GetZenCoderLoop.php
+php ZenCoder/GetZenCoderLoop.php

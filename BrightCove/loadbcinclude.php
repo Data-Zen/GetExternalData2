@@ -108,13 +108,13 @@ where video is null and video_view is not null and video_name is null and video_
 /*  Delete existing data so that we can load clean data*/
 delete from public.bc_videos 
 where exists 
-(select 1 from public.bc_videos_staging b where public.bc_videos.video=b.video and public.bc_videos.bytes_delivered=b.bytes_delivered)
+(select 1 from public.bc_videos_staging b where public.bc_videos.video=b.video and public.bc_videos.bytes_delivered=b.bytes_delivered);
 
 
 /* Load the final de-duped data */
 insert into public.bc_videos
 select distinct * from public.bc_videos_staging a
-where not exists (select 1 from public.bc_videos b where a.video=b.video and a.bytes_delivered=b.bytes_delivered)
+where not exists (select 1 from public.bc_videos b where a.video=b.video and a.bytes_delivered=b.bytes_delivered);
 
 ";
 
