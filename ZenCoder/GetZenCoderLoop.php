@@ -59,10 +59,14 @@ CREATE TABLE public.zencoder_staging  (
     video_codec             varchar(10000) NULL ENCODE LZO,
     width                   int4 NULL ENCODE LZO,
     total_bitrate_in_kbps   int8 NULL ENCODE LZO,
-    url                     varchar(65535) NULL ENCODE LZO
+    outputurl               varchar(65535) NULL ENCODE LZO,
+    azvideoid               int8 null encode lzo,
+    azvideotype             varchar(100) null encode lzo,
+    azbroadcaster           varchar(10000) NULL ENCODE LZO,
+    inputurl                varchar(65535) NULL ENCODE LZO
     )
 DISTSTYLE KEY
-SORTKEY ( created_at )
+SORTKEY ( finished_at )
 
 ";
 if ($debug==1)
@@ -81,37 +85,37 @@ else
 
 
 
-$sql=" select isnull(max(created_at)-3,'2014-01-01') from public.zencoder";
+$sql="select isnull(min(id),0) from zencoder where state ='processing'";
 $result_maxdate = pg_query($connect, $sql);
    while ($row = pg_fetch_array($result_maxdate)) {
-     $maxdtinFinaltable= $row[0];
+     $maxIDinFinalTable= $row[0];
    }
 /* Set this just to get in the loop first time */
-$mindtinStage=date('2030-01-01');
+$MinIDinStage=99999999999999;
 
 if ($debug==1)
 {
-    echo "maxdtinFinaltable: " . $maxdtinFinaltable . "\n";    
+    echo "maxIDinFinalTable: " . $maxIDinFinalTable . "\n";    
 }
 
-while ($mindtinStage >= $maxdtinFinaltable)
+while ($MinIDinStage >= $maxIDinFinalTable)
 {
 
 
-include 'GetZenCoder.php';
+include 'GetZenCoderInclude.php';
 
 
-$sql=" select isnull(min(created_at),'2030-01-01') from public.zencoder_staging";
+$sql=" select isnull(min(id),99999999999999) from public.zencoder_staging";
 $result_mindate = pg_query($connect, $sql);
    while ($row = pg_fetch_array($result_mindate)) {
-     $mindtinStage= $row[0];
+     $MinIDinStage= $row[0];
    }
 if ($debug==1)
 {
-    echo "mindtinStage: " . $mindtinStage . "\n";    
+    echo "MinIDinStage: " . $MinIDinStage . "\n";    
 }
 $page=$page+1;
-sleep(5);
+sleep(10);
 }
 
 /* Load the final table */
@@ -125,7 +129,7 @@ where exists
 
 /* Load the final de-duped data */
 INSERT INTO public.zencoder(audio_bitrate_in_kbps, audio_codec, audio_sample_rate, audio_tracks, channels, created_at, duration_in_ms, error_class, error_message, file_size_bytes, finished_at, format, frame_rate, height, id, md5_checksum, privacy, state, test, updated_at, video_bitrate_in_kbps, video_codec, width, total_bitrate_in_kbps, url, created_at_pst) 
-    SELECT audio_bitrate_in_kbps, audio_codec, audio_sample_rate, audio_tracks, channels, created_at, duration_in_ms, error_class, error_message, file_size_bytes, finished_at, format, frame_rate, height, id, md5_checksum, privacy, state, test, updated_at, video_bitrate_in_kbps, video_codec, width, total_bitrate_in_kbps, url, convert_timezone('PST',created_at) 
+    SELECT distinct audio_bitrate_in_kbps, audio_codec, audio_sample_rate, audio_tracks, channels, created_at, duration_in_ms, error_class, error_message, file_size_bytes, finished_at, format, frame_rate, height, id, md5_checksum, privacy, state, test, updated_at, video_bitrate_in_kbps, video_codec, width, total_bitrate_in_kbps, url, convert_timezone('PST',created_at) 
 FROM public.zencoder_staging b 
 where not exists (select 1 from public.zencoder where public.zencoder.id=b.id)
  
