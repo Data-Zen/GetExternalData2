@@ -88,7 +88,7 @@ credentials 'aws_access_key_id=$S3accessKey;aws_secret_access_key=$S3secretKey'
 json  'auto';
 
 /* Get rid of bad data */
-delete from bc_videos_staging where video is null and video_view is null and video_name is null;
+delete from bc_videos_staging where video is null and video_view is null and video_name is null and video_reference_id is null;
 
 /* Update Date */
 update bc_videos_staging set dt = '$fromdate';
@@ -108,13 +108,13 @@ where video is null and video_view is not null and video_name is null and video_
 /*  Delete existing data so that we can load clean data*/
 delete from public.bc_videos 
 where exists 
-(select 1 from public.bc_videos_staging b where public.bc_videos.video=b.video and public.bc_videos.dt=b.dt and videotags is not null);
+(select 1 from public.bc_videos_staging b where public.bc_videos.video=b.video and public.bc_videos.bytes_delivered=b.bytes_delivered)
 
 
 /* Load the final de-duped data */
 insert into public.bc_videos
-select * from public.bc_videos_staging a
-where not exists (select 1 from public.bc_videos b where a.video=b.video and a.dt=b.dt)
+select distinct * from public.bc_videos_staging a
+where not exists (select 1 from public.bc_videos b where a.video=b.video and a.bytes_delivered=b.bytes_delivered)
 
 ";
 

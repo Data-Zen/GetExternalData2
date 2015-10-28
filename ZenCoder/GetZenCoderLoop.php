@@ -115,11 +115,12 @@ if ($debug==1)
     echo "MinIDinStage: " . $MinIDinStage . "\n";    
 }
 $page=$page+1;
-sleep(10);
+sleep(5);
 }
 
 /* Load the final table */
 $sql=" 
+
 
 /*  Delete existing data so that we can load clean data*/
 delete from public.zencoder 
@@ -128,10 +129,19 @@ where exists
 
 
 /* Load the final de-duped data */
-INSERT INTO public.zencoder(audio_bitrate_in_kbps, audio_codec, audio_sample_rate, audio_tracks, channels, created_at, duration_in_ms, error_class, error_message, file_size_bytes, finished_at, format, frame_rate, height, id, md5_checksum, privacy, state, test, updated_at, video_bitrate_in_kbps, video_codec, width, total_bitrate_in_kbps, url, created_at_pst) 
-    SELECT distinct audio_bitrate_in_kbps, audio_codec, audio_sample_rate, audio_tracks, channels, created_at, duration_in_ms, error_class, error_message, file_size_bytes, finished_at, format, frame_rate, height, id, md5_checksum, privacy, state, test, updated_at, video_bitrate_in_kbps, video_codec, width, total_bitrate_in_kbps, url, convert_timezone('PST',created_at) 
+INSERT INTO public.zencoder 
+    SELECT distinct *    
 FROM public.zencoder_staging b 
-where not exists (select 1 from public.zencoder where public.zencoder.id=b.id)
+where not exists (select 1 from public.zencoder where public.zencoder.id=b.id);
+
+/* Get rid of any possible duplicates that are not  Distinct   */
+delete from zencoder
+using 
+(
+select id,max(created_at) created_at,max(finished_at) finished_at, max(duration_in_ms) duration_in_ms, max(updated_at) updated_at from zencoder where id in (
+select id from zencoder group by 1 having count(1) > 1)
+group by 1) b
+where b.id=zencoder.id and b.created_at<>zencoder.created_at and b.finished_at <> zencoder.finished_at and b.updated_at <> zencoder.updated_at
  
 ";
     
