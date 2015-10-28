@@ -3,6 +3,7 @@
 
 #echo "Hello World!"
 #loop=$1
+date
 loop=${1:-8}
 a=1
 #enddate=`date +%Y-%m-%d`
@@ -24,3 +25,4 @@ done
 
 #Now Get Zencoder
 php ZenCoder/GetZenCoderLoop.php
+date
