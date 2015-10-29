@@ -1,0 +1,81 @@
+Wed Oct 28 16:11:00 PDT 2015
+1
+
+
+ backfill: 0 
+
+Credentials Loaded** 
+
+
+PHP Fatal error:  Call to undefined function pg_connect() in /Users/azubumacbook/scripts/GetExternalData/BrightCove/getBCtags.php on line 19
+2
+
+
+ backfill: 0 
+
+Credentials Loaded** 
+
+
+PHP Fatal error:  Call to undefined function pg_connect() in /Users/azubumacbook/scripts/GetExternalData/BrightCove/getBCtags.php on line 19
+3
+
+
+ backfill: 0 
+
+Credentials Loaded** 
+
+
+PHP Fatal error:  Call to undefined function pg_connect() in /Users/azubumacbook/scripts/GetExternalData/BrightCove/getBCtags.php on line 19
+4
+
+
+ backfill: 0 
+
+Credentials Loaded** 
+
+
+PHP Fatal error:  Call to undefined function pg_connect() in /Users/azubumacbook/scripts/GetExternalData/BrightCove/getBCtags.php on line 19
+5
+
+
+ backfill: 0 
+
+Credentials Loaded** 
+
+
+PHP Fatal error:  Call to undefined function pg_connect() in /Users/azubumacbook/scripts/GetExternalData/BrightCove/getBCtags.php on line 19
+6
+
+
+ backfill: 0 
+
+Credentials Loaded** 
+
+
+PHP Fatal error:  Call to undefined function pg_connect() in /Users/azubumacbook/scripts/GetExternalData/BrightCove/getBCtags.php on line 19
+7
+
+
+ backfill: 0 
+
+Credentials Loaded** 
+
+
+PHP Fatal error:  Call to undefined function pg_connect() in /Users/azubumacbook/scripts/GetExternalData/BrightCove/getBCtags.php on line 19
+8
+
+
+ backfill: 0 
+
+Credentials Loaded** 
+
+
+PHP Fatal error:  Call to undefined function pg_connect() in /Users/azubumacbook/scripts/GetExternalData/BrightCove/getBCtags.php on line 19
+Wed Oct 28 16:11:42 PDT 2015
+ELAPSED_TIME in SECONDS for BC: 42
+Credentials Loaded** 
+
+
+PHP Fatal error:  Call to undefined function pg_connect() in /Users/azubumacbook/scripts/GetExternalData/ZenCoder/GetZenCoderLoop.php on line 33
+Wed Oct 28 16:11:42 PDT 2015
+ELAPSED_TIME in SECONDS for ZC: 0

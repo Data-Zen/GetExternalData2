@@ -15,7 +15,8 @@ else
 { $backfill=0;}
 echo "\n\n backfill: $backfill \n\n"; 
 // Go get last run
-include 'BrightCove/credentials/BrightCoveCredentials.php';
+include './BrightCove/credentials/BrightCoveCredentials.php';
+
 $connect = pg_connect($BrightCoveReadOnlyCredentials);
 if ($backfill ==0)
 {
@@ -185,11 +186,11 @@ $cleanresult = str_replace("]",'"',$cleanresult);
 file_put_contents($file, $cleanresult);
 //exec('php getBC.php "19 october 2015 "20 october 2015" 10 >/dev/null');
 //exec ('whoami');
-include 'getBCinclude.php';
+include './BrightCove/getBCinclude.php';
 
-include 'bcs3.php';
+include './BrightCove/bcs3.php';
 
-include 'loadbcinclude.php';
+include './BrightCove/loadbcinclude.php';
 
 ?>
 
