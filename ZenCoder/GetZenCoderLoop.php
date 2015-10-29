@@ -92,13 +92,14 @@ $result_maxdate = pg_query($connect, $sql);
    }
 /* Set this just to get in the loop first time */
 $MinIDinStage=99999999999999;
+$i=0;
 
 if ($debug==1)
 {
     echo "maxIDinFinalTable: " . $maxIDinFinalTable . "\n";    
 }
 
-while ($MinIDinStage >= $maxIDinFinalTable)
+while ($MinIDinStage >= $maxIDinFinalTable and $i < 500)
 {
 
 
@@ -115,6 +116,7 @@ if ($debug==1)
     echo "MinIDinStage: " . $MinIDinStage . "\n";    
 }
 $page=$page+1;
+$i=$i+1;
 sleep(5);
 }
 
