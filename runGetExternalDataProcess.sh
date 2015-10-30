@@ -13,7 +13,7 @@
 #loop=$1
 date
 START_TIME=$SECONDS
-MyPath="/Users/azubumacbook/scripts/GetExternalData"
+MyPath="/home/paul/scripts/GetExternalData"
 loop=${1:-8}
 a=1
 #enddate=`date +%Y-%m-%d`
