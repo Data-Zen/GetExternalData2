@@ -38,21 +38,7 @@ $result2 = pg_query($connect, "select isnull(max(dt)+1,getdate()-479)::date maxd
 
 
 
-$sql = "drop table if exists BC_Videos_tags;
-create table BC_Videos_tags ( 
-      video bigint encode lzo,
-      videotags varchar(max) encode lzo
-)
-distkey(video);
-
-copy BC_Videos_tags 
-from 's3://$S3bucketName/bcoutputtags.json' with 
-credentials 'aws_access_key_id=$S3accessKey;aws_secret_access_key=$S3secretKey' 
-json  'auto';
-
-/* Get rid of bad data */
-delete from BC_Videos_tags where video is null;
-
+$sql = "
 
 
 
@@ -108,13 +94,13 @@ where video is null and video_view is not null and video_name is null and video_
 /*  Delete existing data so that we can load clean data*/
 delete from public.bc_videos 
 where exists 
-(select 1 from public.bc_videos_staging b where public.bc_videos.video=b.video and public.bc_videos.bytes_delivered=b.bytes_delivered);
+(select 1 from public.bc_videos_staging b where public.bc_videos.video=b.video and public.bc_videos.dt=b.dt);
 
 
 /* Load the final de-duped data */
 insert into public.bc_videos
 select distinct * from public.bc_videos_staging a
-where not exists (select 1 from public.bc_videos b where a.video=b.video and a.bytes_delivered=b.bytes_delivered);
+where not exists (select 1 from public.bc_videos b where a.video=b.video and a.dt=b.dt);
 
 ";
 

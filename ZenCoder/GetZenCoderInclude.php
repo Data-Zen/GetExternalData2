@@ -57,6 +57,7 @@ audio_bitrate_in_kbps,
         AZVideoID,
         AZVideoType,
         AZBroadcaster,
+        video_reference_id,
         inputurl
         ) values 
 ";
@@ -87,9 +88,9 @@ foreach ($results as $chunk) {
             $AZVideoType="SV";
             $AZBroadcaster=substr($AZURL, strpos($AZURL,"SV")+2);
         }
-        echo "\n\n AZURL: $AZURL\n\n\n\n";    
-        echo "\n\n\n AZVIDEOID: $AZVideoID\n\n\n\n";
-        echo "\n\n AZBroadcaster: $AZBroadcaster\n\n\n\n"; 
+       // echo "\n\n AZURL: $AZURL\n\n\n\n";    
+       // echo "\n\n\n AZVIDEOID: $AZVideoID\n\n\n\n";
+       // echo "\n\n AZBroadcaster: $AZBroadcaster\n\n\n\n"; 
 
         $csv= $csv . "(".coall($input_media_files["audio_bitrate_in_kbps"]) . ",'" .
         $input_media_files["audio_codec"] . "'," .
@@ -123,6 +124,7 @@ foreach ($results as $chunk) {
         coall($AZVideoID) . ",'" .
         $AZVideoType . "','" .
         $AZBroadcaster . "','" .
+        "video".coall($AZVideoID) .  $AZVideoType . $AZBroadcaster."','" .
         $input_media_files["url"] . "'),
 		";
     }

@@ -1,7 +1,8 @@
 <?php
 error_reporting(E_ERROR | E_PARSE);
-require "S3.php";
-date_default_timezone_set('America/Los_Angeles');//or change to whatever timezone you want
+require "s3.php";
+echo "Inside BCS3 \n";
+//date_default_timezone_set('America/Los_Angeles');//or change to whatever timezone you want
 $date = filemtime(".");
 $dateFormat = "Y/m/d h:i:s";
 $rundate = date($dateFormat, time());

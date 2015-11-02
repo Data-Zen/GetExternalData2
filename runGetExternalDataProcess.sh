@@ -14,32 +14,47 @@
 date
 START_TIME=$SECONDS
 MyPath="/home/paul/scripts/GetExternalData"
-loop=${1:-8}
+daysback=30
+let loopcount=$daysback+30
+
+loop=${1:-$loopcount}
 a=1
 #enddate=`date +%Y-%m-%d`
 #startdate=`date -v-1d +%F`
 #echo "StartDate: " $startdate
 #echo  "EndDate: " $enddate
 cd $MyPath
-
+  
+  php ./BrightCove/getBCtags_first.php #$a 0 $daysback   #For Daily 
+  php ./BrightCove/loadbcinclude_tags.php #$a 0 $daysback   #For Daily 
 while [ $a -le $loop ]
 do
    echo $a
+   echo "Days back: $daysback"
   
-  #php ./BrightCove/getBCtags.php $a 1 #For Backfill 
+  php ./BrightCove/getBCtags.php $a 1 #For Backfill 
   
-  php ./BrightCove/getBCtags.php $a 0   #For Daily 
+  #php ./BrightCove/getBCtags.php $a 0 $daysback   #For Daily 
   a=`expr $a + 1`
   sleep 5
 done
 
 #Now Get Zencoder
 date
-ELAPSED_TIME=$(($SECONDS - $START_TIME))
+ELAPSED_TIME_BC=$(($SECONDS - $START_TIME))
+let ELAPSED_TIME_BC_Minutes=$ELAPSED_TIME_BC/60
 echo "ELAPSED_TIME in SECONDS for BC:" $ELAPSED_TIME
 START_TIME=$SECONDS
 
 	php ./ZenCoder/GetZenCoderLoop.php
+
+
 date
 ELAPSED_TIME=$(($SECONDS - $START_TIME))
+
+let ELAPSED_TIME_Minutes=$ELAPSED_TIME/60
+echo "ELAPSED_TIME in SECONDS for BC:" $ELAPSED_TIME_BC
+echo "ELAPSED_TIME in Minutes for BC:" $ELAPSED_TIME_BC_Minutes
 echo "ELAPSED_TIME in SECONDS for ZC:" $ELAPSED_TIME
+
+echo "ELAPSED_TIME in Minutes for ZC:" $ELAPSED_TIME_Minutes

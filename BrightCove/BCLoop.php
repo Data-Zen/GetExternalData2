@@ -26,6 +26,7 @@ function coall2($x) {
     }
     else
     {
+         $x = str_replace("'","''",$x);
         $z=$x;
     }
     return $z;
@@ -64,7 +65,6 @@ CREATE TABLE public.zencoder_staging  (
     azvideoid               int8 null encode lzo,
     azvideotype             varchar(100) null encode lzo,
     azbroadcaster           varchar(10000) NULL ENCODE LZO,
-    video_reference_id      varchar(10000) NULL ENCODE LZO,
     inputurl                varchar(65535) NULL ENCODE LZO
     )
 DISTSTYLE KEY
