@@ -11,10 +11,17 @@
 
 #echo "Hello World!"
 #loop=$1
+
+
+backfill=1
+
 date
 START_TIME=$SECONDS
 MyPath="/home/paul/scripts/GetExternalData"
-daysback=30
+daysback=3
+if [ "$backfill" -eq 1 ] ; then
+	daysback=500
+fi
 let loopcount=$daysback+30
 
 loop=${1:-$loopcount}
@@ -32,9 +39,7 @@ do
    echo $a
    echo "Days back: $daysback"
   
-  php ./BrightCove/getBCtags.php $a 1 #For Backfill 
-  
-  #php ./BrightCove/getBCtags.php $a 0 $daysback   #For Daily 
+  php ./BrightCove/getBCtags.php $a $backfill $daysback 
   a=`expr $a + 1`
   sleep 5
 done
