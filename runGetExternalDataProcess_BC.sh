@@ -1,3 +1,4 @@
+
 #!/bin/bash
 #SHELL=/bin/bash
 # Redirect stdout ( > ) into a named pipe ( >() ) running "tee"
@@ -13,12 +14,13 @@
 #loop=$1
 
 
-backfill=1
+backfill=0
+ZC=0
 
 date
 START_TIME=$SECONDS
 MyPath="/home/paul/scripts/GetExternalData"
-daysback=3
+daysback=7
 if [ "$backfill" -eq 1 ] ; then
 	daysback=500
 fi
@@ -50,10 +52,10 @@ ELAPSED_TIME_BC=$(($SECONDS - $START_TIME))
 let ELAPSED_TIME_BC_Minutes=$ELAPSED_TIME_BC/60
 echo "ELAPSED_TIME in SECONDS for BC:" $ELAPSED_TIME
 START_TIME=$SECONDS
+if [ "$ZC" -eq 1 ] ; then
 
 	php ./ZenCoder/GetZenCoderLoop.php
-
-
+fi
 date
 ELAPSED_TIME=$(($SECONDS - $START_TIME))
 

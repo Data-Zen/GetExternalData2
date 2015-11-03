@@ -64,7 +64,10 @@ CREATE TABLE public.bc_videos_staging  (
 	video_reference_id  	varchar(10000) NULL ENCODE LZO,
 	videoname           	varchar(10000) NULL ENCODE LZO,
 	videotags           	varchar(65535) NULL ENCODE LZO,
-	dt                  	date NULL ENCODE LZO sortkey 
+	dt                  	date NULL ENCODE LZO sortkey ,
+	azvideoid           	int8 NULL ENCODE LZO,
+	azvideotype         	varchar(100) NULL ENCODE LZO,
+	azbroadcaster       	varchar(10000) NULL ENCODE LZO 
 	)
 DISTSTYLE KEY;
 
@@ -89,6 +92,65 @@ and bc_videos_staging.videotags is null;
 /* Update the Mobile Data */
 update bc_videos_staging set video = -1, video_name = 'Mobile'
 where video is null and video_view is not null and video_name is null and video_seconds_viewed is not null;
+
+
+/*    */
+
+update bc_videos_staging
+set azvideoid=
+CASE
+WHEN charindex('VOD',substring(video_reference_id,6)) >0  
+        and ( charindex('VOD',substring(video_reference_id,6))  < case when charindex('CH',substring(video_reference_id,6)) = 0 then 100000 else charindex('CH',substring(video_reference_id,6)) end ) 
+        and ( charindex('VOD',substring(video_reference_id,6))  < case when charindex('SV',substring(video_reference_id,6)) = 0 then 100000 else charindex('SV',substring(video_reference_id,6)) end ) 
+THEN substring(substring(video_reference_id,6),1,charindex('VOD',substring(video_reference_id,6))-1  )::bigint
+
+WHEN charindex('CH',substring(video_reference_id,6)) >0 
+    and (charindex('CH',substring(video_reference_id,6)) < case when charindex('SV',substring(video_reference_id,6)) = 0 then 100000 else charindex('SV',substring(video_reference_id,6)) end ) 
+THEN substring(substring(video_reference_id,6),1,charindex('CH',substring(video_reference_id,6))-1  )::bigint
+
+WHEN charindex('SV',substring(video_reference_id,6)) >0 
+THEN substring(substring(video_reference_id,6),1,charindex('SV',substring(video_reference_id,6))-1  )::bigint
+
+ELSE
+NULL
+END-- azvideoid
+,azbroadcaster=CASE
+WHEN charindex('VOD',substring(video_reference_id,6)) >0  
+        and ( charindex('VOD',substring(video_reference_id,6))  < case when charindex('CH',substring(video_reference_id,6)) = 0 then 100000 else charindex('CH',substring(video_reference_id,6)) end ) 
+        and ( charindex('VOD',substring(video_reference_id,6))  < case when charindex('SV',substring(video_reference_id,6)) = 0 then 100000 else charindex('SV',substring(video_reference_id,6)) end ) 
+THEN substring(substring(video_reference_id,6),charindex('VOD',substring(video_reference_id,6))+3  )
+
+
+WHEN charindex('CH',substring(video_reference_id,6)) >0 
+    and (charindex('CH',substring(video_reference_id,6)) < case when charindex('SV',substring(video_reference_id,6)) = 0 then 100000 else charindex('SV',substring(video_reference_id,6)) end ) 
+THEN substring(substring(video_reference_id,6),charindex('CH',substring(video_reference_id,6))+2  )
+
+WHEN charindex('SV',substring(video_reference_id,6)) >0 
+THEN substring(substring(video_reference_id,6),charindex('SV',substring(video_reference_id,6))+2  )
+
+ELSE
+NULL
+END -- azbroadcaster 
+,azvideotype=
+CASE
+WHEN charindex('VOD',substring(video_reference_id,6)) >0  
+        and ( charindex('VOD',substring(video_reference_id,6))  < case when charindex('CH',substring(video_reference_id,6)) = 0 then 100000 else charindex('CH',substring(video_reference_id,6)) end ) 
+        and ( charindex('VOD',substring(video_reference_id,6))  < case when charindex('SV',substring(video_reference_id,6)) = 0 then 100000 else charindex('SV',substring(video_reference_id,6)) end ) 
+THEN  'VOD'
+
+WHEN charindex('CH',substring(video_reference_id,6)) >0 
+    and (charindex('CH',substring(video_reference_id,6)) < case when charindex('SV',substring(video_reference_id,6)) = 0 then 100000 else charindex('SV',substring(video_reference_id,6)) end ) 
+THEN  'CH'
+
+WHEN charindex('SV',substring(video_reference_id,6)) >0 
+THEN 'SV'
+
+ELSE
+NULL
+END 
+where azvideoid is null;
+
+
 
 
 /*  Delete existing data so that we can load clean data*/
