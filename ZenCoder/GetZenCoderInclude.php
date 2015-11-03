@@ -101,8 +101,8 @@ foreach ($results as $chunk) {
         coall2("'" . $input_media_files["created_at"] . "'")."," .
         
         coall($input_media_files["duration_in_ms"]) . ",'" .
-        $input_media_files["error_class"] . "','" .
-        $input_media_files["error_message"] . "'," .
+        coall($input_media_files["error_class"]) . "','" .
+        coall($input_media_files["error_message"]) . "'," .
         coall($input_media_files["file_size_bytes"]) . "," .
         coall2("'" . $input_media_files["finished_at"] . "'").",'" .
         //$input_media_files["finished_at"] . "','" .

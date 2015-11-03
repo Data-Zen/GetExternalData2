@@ -87,7 +87,11 @@ else
 
 
 
-$sql="select isnull(min(id),0) from zencoder where state ='processing'";
+$sql="select min(id) from (
+select isnull(min(id),0) id from zencoder where state ='processing'
+union 
+select max(id) id from zencoder)
+";
 $result_maxdate = pg_query($connect, $sql);
    while ($row = pg_fetch_array($result_maxdate)) {
      $maxIDinFinalTable= $row[0];
@@ -145,8 +149,15 @@ using
 select id,max(created_at) created_at,max(finished_at) finished_at, max(duration_in_ms) duration_in_ms, max(updated_at) updated_at from zencoder where id in (
 select id from zencoder group by 1 having count(1) > 1)
 group by 1) b
-where b.id=zencoder.id and b.created_at<>zencoder.created_at and b.finished_at <> zencoder.finished_at and b.updated_at <> zencoder.updated_at
- 
+where b.id=zencoder.id and b.created_at<>zencoder.created_at and b.finished_at <> zencoder.finished_at and b.updated_at <> zencoder.updated_at;
+
+insert into ccus
+select a.video_name,sum(a.video_view) video_view,sum(a.video_seconds_viewed) video_seconds_viewed ,getdate() dt
+from bc_videos a 
+join zencoder b on a.video_reference_id=b.video_reference_id
+where b.state='processing'
+group by video_name
+order by 2 desc; 
 ";
     
 $rec = pg_query($connect,$sql);

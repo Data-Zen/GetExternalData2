@@ -15,16 +15,16 @@
 
 
 backfill=0
-ZC=0
+ZC=1
 
 date
 START_TIME=$SECONDS
 MyPath="/home/paul/scripts/GetExternalData"
-daysback=7
+daysback=3
 if [ "$backfill" -eq 1 ] ; then
 	daysback=500
 fi
-let loopcount=$daysback+30
+let loopcount=$daysback+7
 
 loop=${1:-$loopcount}
 a=1
@@ -52,11 +52,11 @@ ELAPSED_TIME_BC=$(($SECONDS - $START_TIME))
 let ELAPSED_TIME_BC_Minutes=$ELAPSED_TIME_BC/60
 echo "ELAPSED_TIME in SECONDS for BC:" $ELAPSED_TIME
 START_TIME=$SECONDS
-if [ "$ZC" -eq 1 ] ; then
+if [ "$ZC" -eq 1 ]; then
 
 	php ./ZenCoder/GetZenCoderLoop.php
 fi
-date
+#date
 ELAPSED_TIME=$(($SECONDS - $START_TIME))
 
 let ELAPSED_TIME_Minutes=$ELAPSED_TIME/60
