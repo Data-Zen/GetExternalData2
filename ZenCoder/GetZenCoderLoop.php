@@ -87,43 +87,58 @@ else
 
 
 
-$sql="select min(id) from (
-select isnull(min(id),0) id from zencoder where state ='processing'
+$sql="select min(created_at) from (
+select isnull(min(created_at),'2010-01-01') created_at from zencoder where state ='processing'
 union 
-select max(id) id from zencoder)
+select dateadd(day,-1,max(created_at)) created_at from zencoder)
 ";
+echo "\n*******StartQuery\n".$sql."\n*******EndQuery\n";
 $result_maxdate = pg_query($connect, $sql);
    while ($row = pg_fetch_array($result_maxdate)) {
-     $maxIDinFinalTable= $row[0];
+     $maxDTinFinalTable= $row[0];
    }
 /* Set this just to get in the loop first time */
-$MinIDinStage=99999999999999;
+$MinDTinStage='2020-01-01';
 $i=0;
-
+$errorcount =0;
 if ($debug==1)
 {
-    echo "maxIDinFinalTable: " . $maxIDinFinalTable . "\n";    
+    echo "maxDTinFinalTable: " . $maxDTinFinalTable . "\n";    
 }
 
-while ($MinIDinStage >= $maxIDinFinalTable and $i < 500)
+while ($MinDTinStage >= $maxDTinFinalTable and $i < 500000 /*To ensure no infinite loop*/)
 {
 
 
 include 'GetZenCoderInclude.php';
 
 
-$sql=" select isnull(min(id),99999999999999) from public.zencoder_staging";
+$sql=" select isnull(min(created_at),'2020-01-01') from public.zencoder_staging";
 $result_mindate = pg_query($connect, $sql);
    while ($row = pg_fetch_array($result_mindate)) {
-     $MinIDinStage= $row[0];
+     $MinDTinStage= $row[0];
    }
 if ($debug==1)
 {
-    echo "MinIDinStage: " . $MinIDinStage . "\n";    
+    echo "MinDTinStage: " . $MinDTinStage . "\n";    
 }
+if ($rowsaffected > 0 ){
+/* INSERT WAS GOOD */
 $page=$page+1;
+sleep(20);
+$errorcount =0;
+}
+else
+{
+/* INSERT WAS BAD */
+$errorcount =$errorcount+1;
+$waittime=$errorcount*60;
+echo "Problem with page: $page \n Waiting $waittime seconds. $errorcount Errors so far \n";
+sleep($waittime);
+if ($errorcount > 60) {  echo "\n\nQuiting. Too Many Errors\n\n";}
+
+}
 $i=$i+1;
-sleep(5);
 }
 
 /* Load the final table */
@@ -151,13 +166,6 @@ select id from zencoder group by 1 having count(1) > 1)
 group by 1) b
 where b.id=zencoder.id and b.created_at<>zencoder.created_at and b.finished_at <> zencoder.finished_at and b.updated_at <> zencoder.updated_at;
 
-insert into ccus
-select a.video_name,sum(a.video_view) video_view,sum(a.video_seconds_viewed) video_seconds_viewed ,getdate() dt
-from bc_videos a 
-join zencoder b on a.video_reference_id=b.video_reference_id
-where b.state='processing'
-group by video_name
-order by 2 desc; 
 ";
     
 $rec = pg_query($connect,$sql);

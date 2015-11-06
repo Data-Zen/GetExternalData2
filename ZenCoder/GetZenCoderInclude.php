@@ -27,7 +27,45 @@ echo "\n URL:".$url ."\n";
 
 
 $results = json_decode(file_get_contents($url),true);
-$csv=" insert into zencoder_staging
+$csv="
+
+drop table if exists public.zencoder_staging_tmp;
+CREATE TABLE public.zencoder_staging_tmp  ( 
+    audio_bitrate_in_kbps   int4 NULL ENCODE LZO,
+    audio_codec             varchar(10000) NULL ENCODE LZO,
+    audio_sample_rate       int4 NULL ENCODE LZO,
+    audio_tracks            varchar(10000) NULL ENCODE LZO,
+    channels                int4 NULL ENCODE LZO,
+    created_at              timestamp NULL ENCODE LZO,
+    duration_in_ms          int8 NULL ENCODE LZO,
+    error_class             varchar(10000) NULL ENCODE LZO,
+    error_message           varchar(10000) NULL ENCODE LZO,
+    file_size_bytes         int8 NULL ENCODE LZO,
+    finished_at             timestamp NULL ENCODE LZO,
+    format                  varchar(10000) NULL ENCODE LZO,
+    frame_rate              int4 NULL ENCODE LZO,
+    height                  int4 NULL ENCODE LZO,
+    id                      int8 NULL ENCODE LZO DISTKEY,
+    md5_checksum            varchar(10000) NULL ENCODE LZO,
+    privacy                 varchar(10000) NULL ENCODE LZO,
+    state                   varchar(10000) NULL ENCODE LZO,
+    test                    varchar(10000) NULL ENCODE LZO,
+    updated_at              timestamp NULL ENCODE LZO,
+    video_bitrate_in_kbps   int4 NULL ENCODE LZO,
+    video_codec             varchar(10000) NULL ENCODE LZO,
+    width                   int4 NULL ENCODE LZO,
+    total_bitrate_in_kbps   int8 NULL ENCODE LZO,
+    outputurl               varchar(65535) NULL ENCODE LZO,
+    azvideoid               int8 null encode lzo,
+    azvideotype             varchar(100) null encode lzo,
+    azbroadcaster           varchar(10000) NULL ENCODE LZO,
+    video_reference_id      varchar(10000) NULL ENCODE LZO,
+    inputurl                varchar(65535) NULL ENCODE LZO
+    )
+DISTSTYLE KEY
+SORTKEY ( finished_at );
+
+ insert into zencoder_staging_tmp
 (
 audio_bitrate_in_kbps,
         audio_codec,
@@ -68,7 +106,8 @@ foreach ($results as $chunk) {
         $output_media_files = $job["output_media_files"][0];
         $outputurl=coall($output_media_files["url"]); 
         if (strpos($outputurl,"CH") >0  )
-        {
+        {    
+            //Use to get video / broadcaster / broadcasttype
             $AZURL=substr($outputurl, strpos($outputurl,"video")+strlen("video"));
             if (strpos($AZURL,"_") >0  ) {$AZURL=substr($AZURL, 0,strpos($AZURL,"_"));}
             if (strpos($AZURL,"/") >0  ) {$AZURL=substr($AZURL, 0,strpos($AZURL,"/"));}
@@ -137,8 +176,27 @@ date_default_timezone_set('UTC');//or change to whatever timezone you want
        
 
 echo "\n*******StartQuery\n".$csv."\n*******EndQuery\n";
+$rowsaffected=0;
 $rec = pg_query($connect,$csv);
+$rowsaffected=pg_affected_rows($rec);
+echo "Rows affected $rowsaffected \n\n";
+$sql = "
+;
+/*  Delete existing data so that we can load clean data*/
+delete from public.zencoder_staging 
+where exists 
+(select 1 from public.zencoder_staging_tmp b where zencoder_staging.id=b.id);
 
+
+/* Load the final de-duped data */
+INSERT INTO public.zencoder_staging 
+    SELECT distinct *    
+FROM public.zencoder_staging_tmp b ;
+
+
+";
+echo "\n*******StartQuery\n".$sql."\n*******EndQuery\n";
+$rec = pg_query($connect,$sql);
   /*$id   = $artist['id'];
   $name = $artist['name'];
 
