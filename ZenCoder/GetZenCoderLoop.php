@@ -68,7 +68,7 @@ CREATE TABLE public.zencoder_staging  (
     inputurl                varchar(65535) NULL ENCODE LZO
     )
 DISTSTYLE KEY
-SORTKEY ( finished_at )
+SORTKEY ( created_at )
 
 ";
 if ($debug==1)
@@ -135,7 +135,7 @@ $errorcount =$errorcount+1;
 $waittime=$errorcount*60;
 echo "Problem with page: $page \n Waiting $waittime seconds. $errorcount Errors so far \n";
 sleep($waittime);
-if ($errorcount > 60) {  echo "\n\nQuiting. Too Many Errors\n\n";}
+if ($errorcount > 10) {  echo "\n\nQuiting. Too Many Errors\n\n";}
 
 }
 $i=$i+1;
@@ -167,7 +167,7 @@ group by 1) b
 where b.id=zencoder.id and b.created_at<>zencoder.created_at and b.finished_at <> zencoder.finished_at and b.updated_at <> zencoder.updated_at;
 
 ";
-    
+echo "\n*******StartQuery\n".$sql."\n*******EndQuery\n";
 $rec = pg_query($connect,$sql);
 
   /*$id   = $artist['id'];
