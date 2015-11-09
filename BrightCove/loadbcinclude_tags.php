@@ -41,7 +41,7 @@ $result2 = pg_query($connect, "select isnull(max(dt)+1,getdate()-479)::date maxd
 
 $sql = "drop table if exists BC_Videos_tags;
 create table BC_Videos_tags ( 
-      video bigint encode lzo,
+      video bigint encode lzo sortkey,
       videotags varchar(max) encode lzo
 )
 distkey(video);

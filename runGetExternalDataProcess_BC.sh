@@ -34,8 +34,10 @@ a=1
 #echo  "EndDate: " $enddate
 cd $MyPath
   
-  php ./BrightCove/getBCtags_first.php #$a 0 $daysback   #For Daily 
-  php ./BrightCove/loadbcinclude_tags.php #$a 0 $daysback   #For Daily 
+  php ./BrightCove/getBCtags_first.php 
+  php ./BrightCove/AZData/GetBroadcasterData.php 
+  #php ./BrightCove/bcs3.php
+  php ./BrightCove/loadbcinclude_tags.php 
 while [ $a -le $loop ]
 do
    echo $a
