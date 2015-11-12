@@ -40,6 +40,7 @@ IGNOREHEADER 1;
 delete from BC_Videos_tags where video is null;
 */
 
+GRANT SELECT ON TABLE public.broadcaster_details TO GROUP readonly;
 
 ";
 
