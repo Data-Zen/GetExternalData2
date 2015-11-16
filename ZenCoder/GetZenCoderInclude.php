@@ -60,7 +60,13 @@ CREATE TABLE public.zencoder_staging_tmp  (
     azvideotype             varchar(100) null encode lzo,
     azbroadcaster           varchar(10000) NULL ENCODE LZO,
     video_reference_id      varchar(10000) NULL ENCODE LZO,
-    inputurl                varchar(65535) NULL ENCODE LZO
+    inputurl                varchar(65535) NULL ENCODE LZO,
+    sourcelatitude          float ENCODE bytedict,
+    sourcelongitude         float ENCODE bytedict,
+    sourcelocation          varchar(10000) NULL ENCODE LZO,
+    destinationlatitude     float ENCODE bytedict,
+    destinationlongitude    float ENCODE bytedict,
+    destinationlocation     varchar(10000) NULL ENCODE LZO
     )
 DISTSTYLE KEY
 SORTKEY ( finished_at );
@@ -96,7 +102,13 @@ audio_bitrate_in_kbps,
         AZVideoType,
         AZBroadcaster,
         video_reference_id,
-        inputurl
+        inputurl,
+        sourcelatitude         ,
+        sourcelongitude        ,
+        sourcelocation         ,
+        destinationlatitude    ,
+        destinationlongitude   ,
+        destinationlocation     
         ) values 
 ";
 foreach ($results as $chunk) {
@@ -105,6 +117,7 @@ foreach ($results as $chunk) {
      $input_media_files = $job["input_media_file"];
         $output_media_files = $job["output_media_files"][0];
         $outputurl=coall($output_media_files["url"]); 
+
         if (strpos($outputurl,"CH") >0  )
         {    
             //Use to get video / broadcaster / broadcasttype
@@ -130,6 +143,22 @@ foreach ($results as $chunk) {
        // echo "\n\n AZURL: $AZURL\n\n\n\n";    
        // echo "\n\n\n AZVIDEOID: $AZVideoID\n\n\n\n";
        // echo "\n\n AZBroadcaster: $AZBroadcaster\n\n\n\n"; 
+
+        $stream     = $job["stream"];
+        $location   = $stream["location"];
+        $source     = $location["source"];
+        $sourcelatitude   = coall($source["latitude"]);
+        $sourcelongitude   = coall($source["longitude"]);
+        $sourcelocation   = coall($source["location"]);
+
+        $destination     = $location["destination"];
+        $destinationlatitude   = coall($destination["latitude"]);
+        $destinationlongitude   = coall($destination["longitude"]);
+        $destinationlocation   = coall($destination["location"]);
+
+        //echo "\n\n sourcelocation: $sourcelocation\n\n\n\n";      
+        //echo "\n\n destinationlocation: $destinationlocation\n\n\n\n";   
+
 
         $csv= $csv . "(".coall($input_media_files["audio_bitrate_in_kbps"]) . ",'" .
         $input_media_files["audio_codec"] . "'," .
@@ -164,8 +193,15 @@ foreach ($results as $chunk) {
         $AZVideoType . "','" .
         $AZBroadcaster . "','" .
         "video".coall($AZVideoID) .  $AZVideoType . $AZBroadcaster."','" .
-        $input_media_files["url"] . "'),
-		";
+        $input_media_files["url"] . "'"
+        . ",".coall($sourcelatitude)  
+        . ",".coall($sourcelongitude)  
+        . ",'".coall2($sourcelocation) . "'"
+        . ",".coall($destinationlatitude)  
+        . ",".coall($destinationlongitude)  
+        . ",'".coall2($destinationlocation) . "'"
+
+        ."),";
     }
     $csv=rtrim($csv);
     $csv=rtrim($csv,',');

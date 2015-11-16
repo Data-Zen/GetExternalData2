@@ -65,7 +65,13 @@ CREATE TABLE public.zencoder_staging  (
     azvideotype             varchar(100) null encode lzo,
     azbroadcaster           varchar(10000) NULL ENCODE LZO,
     video_reference_id      varchar(10000) NULL ENCODE LZO,
-    inputurl                varchar(65535) NULL ENCODE LZO
+    inputurl                varchar(65535) NULL ENCODE LZO,
+    sourcelatitude          float ENCODE bytedict,
+    sourcelongitude         float ENCODE bytedict,
+    sourcelocation          varchar(10000) NULL ENCODE LZO,
+    destinationlatitude     float ENCODE bytedict,
+    destinationlongitude    float ENCODE bytedict,
+    destinationlocation     varchar(10000) NULL ENCODE LZO
     )
 DISTSTYLE KEY
 SORTKEY ( created_at )
@@ -153,9 +159,20 @@ where exists
 
 /* Load the final de-duped data */
 INSERT INTO public.zencoder 
-    SELECT distinct *    
+select a.*,nvl(c.name_en,sourcelocation_country_cd) From (
+
+    SELECT distinct *
+    ,duration_in_ms / 1000 / 60 duration_in_minutes
+    ,duration_in_ms::float / 1000 / 60 /60 duration_in_hours
+    ,case when split_part(sourcelocation,',',3) = '' then sourcelocation else split_part(sourcelocation,',',3) end sourcelocation_country_cd
 FROM public.zencoder_staging b 
-where not exists (select 1 from public.zencoder where public.zencoder.id=b.id);
+where not exists (select 1 from public.zencoder where public.zencoder.id=b.id)
+) a 
+left join countries c on trim(lower(sourcelocation_country_cd))=trim(lower(c.code)) ;
+
+
+
+
 
 /* Get rid of any possible duplicates that are not  Distinct   */
 delete from zencoder
@@ -165,7 +182,7 @@ select id,max(created_at) created_at,max(finished_at) finished_at, max(duration_
 select id from zencoder group by 1 having count(1) > 1)
 group by 1) b
 where b.id=zencoder.id and b.created_at<>zencoder.created_at and b.finished_at <> zencoder.finished_at and b.updated_at <> zencoder.updated_at;
-
+select count(1),(select min(created_at ) from zencoder z) from zencoder;
 ";
 echo "\n*******StartQuery\n".$sql."\n*******EndQuery\n";
 $rec = pg_query($connect,$sql);
