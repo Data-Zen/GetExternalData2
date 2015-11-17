@@ -37,7 +37,9 @@ cd $MyPath
   php ./BrightCove/getBCtags_first.php 
   php ./BrightCove/AZData/GetBroadcasterData.php 
   #php ./BrightCove/bcs3.php
+  #php ./BrightCove/AZData/LoadBroadcasterData.php 
   php ./BrightCove/loadbcinclude_tags.php 
+
 while [ $a -le $loop ]
 do
    echo $a
@@ -60,6 +62,9 @@ if [ "$ZC" -eq 1 ]; then
 fi
 #date
 ELAPSED_TIME=$(($SECONDS - $START_TIME))
+
+
+php ./BrightCove/AZData/FinalProcessing.php
 
 let ELAPSED_TIME_Minutes=$ELAPSED_TIME/60
 echo "ELAPSED_TIME in SECONDS for BC:" $ELAPSED_TIME_BC
