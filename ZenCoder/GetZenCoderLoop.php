@@ -96,7 +96,7 @@ else
 $sql="select min(created_at) from (
 select isnull(min(created_at),'2010-01-01') created_at from zencoder where state ='processing'
 union 
-select dateadd(day,-1,max(created_at)) created_at from zencoder)
+select dateadd(h,-3,max(created_at)) created_at from zencoder)
 ";
 echo "\n*******StartQuery\n".$sql."\n*******EndQuery\n";
 $result_maxdate = pg_query($connect, $sql);
