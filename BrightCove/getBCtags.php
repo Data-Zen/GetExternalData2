@@ -83,11 +83,32 @@ $limit="100000000";
 echo "Limit:" . $limit . "\n";
 
 
-include './BrightCove/getBCinclude.php';
+include './BrightCove/getBCinclude_video.php';
+#include './BrightCove/getBCinclude_account.php';
+#include './BrightCove/getBCinclude_player.php';
+#include './BrightCove/getBCinclude_date.php';
+#include './BrightCove/getBCinclude_date_hour.php';
+#include './BrightCove/getBCinclude_destination_domain.php';
+#include './BrightCove/getBCinclude_destination_path.php';
+
+#include './BrightCove/getBCinclude_country.php';
+#include './BrightCove/getBCinclude_city.php';
+#include './BrightCove/getBCinclude_region.php';
+#include './BrightCove/getBCinclude_referrer_domain.php';
+#include './BrightCove/getBCinclude_source_type.php';
+#include './BrightCove/getBCinclude_search_terms.php';
+include './BrightCove/getBCinclude_device_type.php';
+#include './BrightCove/getBCinclude_device_os.php';
+
+
+#include './BrightCove/getBCinclude_account.php';
 
 include './BrightCove/bcs3.php';
 
-include './BrightCove/loadbcinclude.php';
+include './BrightCove/loadbcinclude_videos.php';
+include './BrightCove/loadbcinclude_device_type.php';
+#include './BrightCove/loadbcinclude_device_type.php';
+#include './BrightCove/loadbcinclude_device_os';
 
 ?>
 

@@ -1,6 +1,5 @@
-
-#!/bin/bash
-#SHELL=/bin/bash
+#! /bin/bash
+SHELL=/bin/bash
 # Redirect stdout ( > ) into a named pipe ( >() ) running "tee"
 #exec > >(tee .runGetExternalDataProcess.log)
 
@@ -20,7 +19,7 @@ ZC=1
 date
 START_TIME=$SECONDS
 MyPath="/home/paul/scripts/GetExternalData"
-daysback=3
+daysback=8
 if [ "$backfill" -eq 1 ] ; then
 	daysback=500
 fi

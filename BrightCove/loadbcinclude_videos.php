@@ -72,7 +72,7 @@ CREATE TABLE public.bc_videos_staging  (
 DISTSTYLE KEY;
 
 copy bc_videos_staging
-from 's3://$S3bucketName/bcoutput.json' with 
+from 's3://$S3bucketName/bcoutput_video.json' with 
 credentials 'aws_access_key_id=$S3accessKey;aws_secret_access_key=$S3secretKey' 
 json  'auto'
 $S3Region;

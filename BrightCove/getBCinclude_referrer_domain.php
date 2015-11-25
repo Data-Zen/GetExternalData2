@@ -3,14 +3,13 @@
 //$dimensions = $argv[4];
 //if ($dimensions == "")
 //{
-	$dimensions="video";
+	$dimensions="referrer_domain";
 //}
 
 //$fields = $argv[5];
 //if ($fields == "")
 //{
-	$fields="account,account.name,bytes_delivered,engagement_score,play_rate,video,video_duration,video_engagement_1,video_engagement_100,video_engagement_25,video_engagement_50,video_engagement_75,video_impression,video_name,video_percent_viewed,video_seconds_viewed,video_view,video.reference_id,video.name&";
-//}
+	$fields="account,engagement_score,play_rate,player_load,referrer_domain,video_impression,video_percent_viewed,video_seconds_viewed,video_view&";//}
 
 	echo  "Dimensions: " . $dimensions. "\n";
 	echo  "Fields: " . $fields. "\n";
@@ -29,18 +28,6 @@
 
 
 
-
-function SendRequest($url, $method, $data, $headers) {
-	$context = stream_context_create(array
-		(
-			"http"     => array(
-				"method"  => $method,
-				"header"  => $headers,
-				"content" => http_build_query($data)
-			)
-		));
-	return file_get_contents($url, false, $context);
-}
 // set up request for access token
 $data          = array();
 $client_id     = $BrightCoveClientID;
@@ -129,10 +116,10 @@ $headers = array(
 	2=> "Content-type: application/x-www-form-urlencoded",
 );
 //send the tp request
+
 $result = SendRequest($request, $method, $data, $headers);
-$result = str_replace("account.name","account_name",$result);
-$result = str_replace("video.reference_id","video_reference_id",$result);
-$result = str_replace("video.name","videoname",$result);
+
+
 //$result = str_replace("video.tags","videotags",$result);
 $cleanresult = substr($result,strpos($result,'"items":[')+8,-1);
 //echo $cleanresult;
@@ -141,7 +128,7 @@ $cleanresult = substr($cleanresult,1,strrpos($cleanresult,"summary")-4);
 //echo $cleanresult;
 $cleanresult = str_replace("},{","}{",$cleanresult);
 
-$file="files/bcoutput.json";
+$file="files/bcoutput_referrer_domain.json";
 
 file_put_contents($file, $cleanresult);
 

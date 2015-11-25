@@ -34,7 +34,8 @@ copy broadcaster_details_stg
 from 's3://$S3bucketName/broadcasters.csv' with 
 credentials 'aws_access_key_id=$S3accessKey;aws_secret_access_key=$S3secretKey' 
 csv
-IGNOREHEADER 1;
+IGNOREHEADER 1
+$S3Region;
 
 
 drop table if exists broadcaster_details;
@@ -127,11 +128,15 @@ $sql = "
 GRANT SELECT ON TABLE public.broadcaster_details TO GROUP readonly;
 
 alter table broadcaster_details add analytics_ignore smallint;
+truncate table broadcaster_details_rollup;
+update broadcaster_details
+set analytics_ignore=0;
 update broadcaster_details
 set analytics_ignore=1
 WHERE 
 (email ilike '%azubu.com' or email  ilike '%geeksforless%'
 or email  ilike '%deleted%' or email  ilike '%test%' 
+
 );
 
 

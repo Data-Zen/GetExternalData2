@@ -49,7 +49,8 @@ distkey(video);
 copy BC_Videos_tags 
 from 's3://$S3bucketName/bcoutputtags.json' with 
 credentials 'aws_access_key_id=$S3accessKey;aws_secret_access_key=$S3secretKey' 
-json  'auto';
+json  'auto'
+$S3Region;
 
 /* Get rid of bad data */
 delete from BC_Videos_tags where video is null;
