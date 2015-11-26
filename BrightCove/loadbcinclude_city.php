@@ -10,7 +10,7 @@ echo "END CREDENTIALS  \n\n\n\n";
 */
 $connect = pg_connect($BrightCoveModifyCredentials);
 /*
-$result2 = pg_query($connect, "select isnull(max(dt)+1,getdate()-479)::date maxdt, dateadd(day,1,isnull(max(dt)+1,getdate()-479))::date from public.bc_device_type");
+$result2 = pg_query($connect, "select isnull(max(dt)+1,getdate()-479)::date maxdt, dateadd(day,1,isnull(max(dt)+1,getdate()-479))::date from public.bc_city");
 
    while ($row = pg_fetch_array($result2)) {
      $fromdate= $row[0];
@@ -40,12 +40,11 @@ $result2 = pg_query($connect, "select isnull(max(dt)+1,getdate()-479)::date maxd
 
 $sql = "
 
-
-drop table if exists public.bc_device_type_staging;
-CREATE TABLE public.bc_device_type_staging  ( 
+drop table if exists public.bc_city_staging;
+CREATE TABLE public.bc_city_staging  ( 
 	account             	int8 NULL ENCODE LZO,
 	account_name        	varchar(10000) NULL ENCODE LZO,
-	device_type		     	varchar(10000) NULL ENCODE LZO,
+	city		     		varchar(10000) NULL ENCODE LZO,
 	engagement_score      	float8 NULL ENCODE bytedict,
 	play_rate           	float8 NULL ENCODE bytedict,
 	player_load             int8 NULL ENCODE LZO DISTKEY,
@@ -59,31 +58,31 @@ DISTSTYLE KEY;
 
 
 
-copy bc_device_type_staging
-from 's3://$S3bucketName/bcoutput_device_type.json' with 
+copy bc_city_staging
+from 's3://$S3bucketName/bcoutput_city.json' with 
 credentials 'aws_access_key_id=$S3accessKey;aws_secret_access_key=$S3secretKey' 
 json  'auto'
 $S3Region;
 
 /* Get rid of bad data */
-delete from bc_device_type_staging where device_type is null;
+delete from bc_city_staging where city is null;
 
 /* Update Date */
-update bc_device_type_staging set dt = '$fromdate';
+update bc_city_staging set dt = '$fromdate';
 
 
 
 
 /*  Delete existing data so that we can load clean data*/
-delete from public.bc_device_type
+delete from public.bc_city
 where exists 
-(select 1 from public.bc_device_type_staging b where public.bc_device_type.device_type=b.device_type and public.bc_device_type.dt=b.dt);
+(select 1 from public.bc_city_staging b where public.bc_city.city=b.city and public.bc_city.dt=b.dt);
 
 
 /* Load the final de-duped data */
-insert into public.bc_device_type
-select distinct * from public.bc_device_type_staging a
-where not exists (select 1 from public.bc_device_type b where a.device_type=b.device_type and a.dt=b.dt);
+insert into public.bc_city
+select distinct * from public.bc_city_staging a
+where not exists (select 1 from public.bc_city b where a.city=b.city and a.dt=b.dt);
 
 ";
 
@@ -93,7 +92,6 @@ echo "\n*******StartQuery\n".$sql."\n*******EndQuery\n";
 $rec = pg_query($connect,$sql);
 $rowsaffected=pg_affected_rows($rec);
 echo "Rows affected $rowsaffected \n\n";
-
 
 
 ?>

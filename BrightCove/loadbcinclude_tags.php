@@ -62,7 +62,8 @@ delete from BC_Videos_tags where video is null;
 
 echo "\n*******StartQuery\n".$sql."\n*******EndQuery\n";
 $rec = pg_query($connect,$sql);
-var_dump(pg_fetch_array($rec));
+$rowsaffected=pg_affected_rows($rec);
+echo "Rows affected $rowsaffected \n\n";
 
 
 

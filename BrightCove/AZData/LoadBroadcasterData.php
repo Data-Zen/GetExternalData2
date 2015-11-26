@@ -153,6 +153,8 @@ select count(1) ct,package,getdate()  from public.broadcaster_details where chan
 echo "\n*******StartQuery\n".$sql."\n*******EndQuery\n";
 $rec = pg_query($connect,$sql);
 #var_dump(pg_fetch_array($rec));
+$rowsaffected=pg_affected_rows($rec);
+echo "Rows affected $rowsaffected \n\n";
 
 
 

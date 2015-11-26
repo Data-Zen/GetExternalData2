@@ -119,8 +119,6 @@ $headers = array(
 //send the tp request
 
 $result = SendRequest($request, $method, $data, $headers);
-var_dump($result);
-
 $result = str_replace("account.name","account_name",$result);
 $result = str_replace("video.reference_id","video_reference_id",$result);
 $result = str_replace("video.name","videoname",$result);

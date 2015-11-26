@@ -171,7 +171,8 @@ where not exists (select 1 from public.bc_videos b where a.video=b.video and a.d
 
 echo "\n*******StartQuery\n".$sql."\n*******EndQuery\n";
 $rec = pg_query($connect,$sql);
-var_dump(pg_fetch_array($rec));
+$rowsaffected=pg_affected_rows($rec);
+echo "Rows affected $rowsaffected \n\n";
 
 
 

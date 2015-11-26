@@ -118,8 +118,9 @@ $headers = array(
 //send the tp request
 
 $result = SendRequest($request, $method, $data, $headers);
-
-
+$result = str_replace("account.name","account_name",$result);
+$result = str_replace("video.reference_id","video_reference_id",$result);
+$result = str_replace("video.name","videoname",$result);
 //$result = str_replace("video.tags","videotags",$result);
 $cleanresult = substr($result,strpos($result,'"items":[')+8,-1);
 //echo $cleanresult;
@@ -127,7 +128,6 @@ $cleanresult = substr($result,strpos($result,'"items":[')+8,-1);
 $cleanresult = substr($cleanresult,1,strrpos($cleanresult,"summary")-4);
 //echo $cleanresult;
 $cleanresult = str_replace("},{","}{",$cleanresult);
-
 $file="files/bcoutput_country.json";
 
 file_put_contents($file, $cleanresult);
