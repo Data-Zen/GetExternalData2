@@ -115,10 +115,10 @@ include './BrightCove/loadbcinclude_country.php';
 include './BrightCove/loadbcinclude_city.php';
 include './BrightCove/loadbcinclude_region.php';
 include './BrightCove/loadbcinclude_referrer_domain.php';
-#include './BrightCove/loadbcinclude_source_type.php';
-#include './BrightCove/loadbcinclude_search_terms.php';
+include './BrightCove/loadbcinclude_source_type.php';
+include './BrightCove/loadbcinclude_search_terms.php';
 include './BrightCove/loadbcinclude_device_type.php';
-#include './BrightCove/loadbcinclude_device_os.php';
+include './BrightCove/loadbcinclude_device_os.php';
 
 
 
