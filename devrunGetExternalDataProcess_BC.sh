@@ -40,26 +40,35 @@ cd $MyPath
   #php ./BrightCove/AZData/LoadBroadcasterData.php 
   php ./BrightCove/loadbcinclude_tags.php 
 let errorloop=0
+let sleepv=30
 while [ $a -le $loop ]
 do
    echo "Currently on Day $a of $loop"
-  output=`php ./BrightCove/BCProcessing.php $a $backfill $daysback`
+  php ./BrightCove/BCProcessing.php $a $backfill $daysback
   exitcode=$?
+  #echo $output
   echo "exitcode: $exitcode"
 
-    if [ "$exitcode" -ne 0 ] && [ "$errorloop" -le 3 ]; then
+    if [ "$exitcode" -ne 0 ] && [ "$errorloop" -le 2 ]; then
       let errorloop=$errorloop+1
-      echo "Error Retrying $errorloop"
-      sleep 30
+      echo "Starting error $sleepv second sleep. Error Attempt $errorloop"
+      sleep $sleepv
+      echo "Finished error $sleepv second sleep"
+      let sleepv=$sleepv*$errorloop
     else 
-        a=`expr $a + 1`      
-        let errorloop=0
+      if [ "$errorloop" -eq 0 ]; then
+        echo "No Errors"
+      else
+        echo "Moving on From Errors"
+      fi
+      a=`expr $a + 1`      
+      let errorloop=0
+      echo "Starting regular $sleepv second sleep"
+      sleep $sleepv
+      echo "Finished regular $sleepv second sleep"
     fi
 
-  #exit
-  echo "Starting sleep"
-  sleep 15
-  echo "Finished sleep"
+
 done
 
 #Now Get Zencoder
