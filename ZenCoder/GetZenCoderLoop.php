@@ -131,7 +131,7 @@ if ($debug==1)
 if ($rowsaffected > 0 ){
 /* INSERT WAS GOOD */
 $page=$page+1;
-sleep(20);
+sleep(5);
 $errorcount =0;
 }
 else

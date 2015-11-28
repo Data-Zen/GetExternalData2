@@ -39,7 +39,7 @@ function SendRequest($url, $method, $data, $headers) {
 				"content" => http_build_query($data)
 			)
 		));
-	return file_get_contents($url, false, $context);
+	return file_get_contents($url, false, $context) or exit(999);
 }
 // set up request for access token
 $data          = array();

@@ -120,6 +120,9 @@ include './BrightCove/loadbcinclude_search_terms.php';
 include './BrightCove/loadbcinclude_device_type.php';
 include './BrightCove/loadbcinclude_device_os.php';
 
+if ($rowsaffected=0 ){
+exit (999);
+}
 
 
 ?>

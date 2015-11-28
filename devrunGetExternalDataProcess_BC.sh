@@ -19,7 +19,8 @@ ZC=1
 date
 START_TIME=$SECONDS
 MyPath="/home/paul/scripts/GetExternalData"
-daysback=500
+#daysback=330
+daysback=620
 if [ "$backfill" -eq 1 ] ; then
 	daysback=500
 fi
@@ -34,20 +35,31 @@ a=1
 cd $MyPath
   
   php ./BrightCove/getBCtags_first.php 
-  php ./BrightCove/AZData/GetBroadcasterData.php 
+
   #php ./BrightCove/bcs3.php
   #php ./BrightCove/AZData/LoadBroadcasterData.php 
   php ./BrightCove/loadbcinclude_tags.php 
-
+let errorloop=0
 while [ $a -le $loop ]
 do
-   echo $a
-   echo "Days back: $daysback"
-  
-  php ./BrightCove/BCProcessing.php $a $backfill $daysback 
-  a=`expr $a + 1`
+   echo "Currently on Day $a of $loop"
+  output=`php ./BrightCove/BCProcessing.php $a $backfill $daysback`
+  exitcode=$?
+  echo "exitcode: $exitcode"
+
+    if [ "$exitcode" -ne 0 ] && [ "$errorloop" -le 3 ]; then
+      let errorloop=$errorloop+1
+      echo "Error Retrying $errorloop"
+      sleep 30
+    else 
+        a=`expr $a + 1`      
+        let errorloop=0
+    fi
+
   #exit
+  echo "Starting sleep"
   sleep 15
+  echo "Finished sleep"
 done
 
 #Now Get Zencoder
@@ -63,7 +75,7 @@ fi
 #date
 ELAPSED_TIME=$(($SECONDS - $START_TIME))
 
-
+php ./BrightCove/AZData/GetBroadcasterData.php 
 php ./BrightCove/AZData/FinalProcessing.php
 
 let ELAPSED_TIME_Minutes=$ELAPSED_TIME/60
