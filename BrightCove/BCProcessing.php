@@ -84,6 +84,7 @@ echo "Limit:" . $limit . "\n";
 
 
 include './BrightCove/getBCinclude_video.php';
+include './BrightCove/getBCinclude_videotest.php';
 include './BrightCove/getBCinclude_account.php';
 include './BrightCove/getBCinclude_player.php';
 include './BrightCove/getBCinclude_date.php';
