@@ -20,7 +20,7 @@ date
 START_TIME=$SECONDS
 MyPath="/home/paul/scripts/GetExternalData"
 #daysback=330
-daysback=7
+daysback=3
 if [ "$backfill" -eq 1 ] ; then
 	daysback=500
 fi
@@ -40,7 +40,7 @@ cd $MyPath
   #php ./BrightCove/AZData/LoadBroadcasterData.php 
   php ./BrightCove/loadbcinclude_tags.php 
 let errorloop=0
-let sleepv=30
+let sleepv=10
 while [ $a -le $loop ]
 do
    echo "Currently on Day $a of $loop"

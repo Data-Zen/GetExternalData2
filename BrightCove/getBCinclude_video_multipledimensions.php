@@ -1,18 +1,34 @@
 <?php
 
+
+$array = [
+
+    ["video_device", "video,device_os,device_type","video_view,video.name,video_seconds_viewed,video.reference_id,video_duration,device_os,device_type&"],
+    ["video_country", "video,country","video_view,video.name,video_seconds_viewed,video.reference_id,video_duration,country,country_name&"],
+    ["video_referrer", "video,referrer_domain,source_type","video_view,video.name,video_seconds_viewed,video.reference_id,video_duration,referrer_domain,source_type&"],
+  //  ["video_source", "video,source_type,search_terms ","video_view&"],
+    ["video_destination", "video,destination_domain","video_view,video.name,video_seconds_viewed,video.reference_id,video_duration,destination_domain&"]
+];
+
+foreach ($array as list($afilename, $adimension,$afields)) {
+
+
 //$dimensions = $argv[4];
 //if ($dimensions == "")
 //{
 	//$dimensions="video,device_os,device_type";
 	//$dimensions="video,country";
-	$dimensions="video,referrer_domain,source_type";
+	$dimensions=$adimension;
+	//$dimensions="video,source_type,search_terms";
+	//video, destination_domain
 //}
 
 //$fields = $argv[5];
 //if ($fields == "")
 //{
 	//$fields="account,account.name,active_media,bytes_delivered,device_os,device_type,daily_unique_viewers,drm_bytes_packaged,engagement_score,licenses_served,live_seconds_streamed,play_rate,player_load,,video,video_duration,video_engagement_1,video_engagement_100,video_engagement_25,video_engagement_50,video_engagement_75,video_impression,video_name,video_percent_viewed,video_seconds_viewed,video_view,video.reference_id,video.name&";
-	$fields="video_view,video.name,video_seconds_viewed,video.reference_id,video_duration,source_type,referrer_domain&";
+	//$fields="video_view,video.name,video_seconds_viewed,video.reference_id,video_duration,source_type,referrer_domain&";
+	$fields=$afields;
 //}
 
 	echo  "Dimensions: " . $dimensions. "\n";
@@ -133,10 +149,11 @@ $cleanresult = substr($cleanresult,1,strrpos($cleanresult,"summary")-4);
 //echo $cleanresult;
 $cleanresult = str_replace("},{","}{",$cleanresult);
 
-$file="files/bcoutput_videotest.json";
+$file="files/bcoutput_".$afilename . ".json";
 
 file_put_contents($file, $cleanresult);
 
+}
 
 
 

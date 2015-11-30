@@ -84,7 +84,6 @@ echo "Limit:" . $limit . "\n";
 
 
 include './BrightCove/getBCinclude_video.php';
-include './BrightCove/getBCinclude_videotest.php';
 include './BrightCove/getBCinclude_account.php';
 include './BrightCove/getBCinclude_player.php';
 include './BrightCove/getBCinclude_date.php';
@@ -99,7 +98,7 @@ include './BrightCove/getBCinclude_source_type.php';
 include './BrightCove/getBCinclude_search_terms.php';
 include './BrightCove/getBCinclude_device_type.php';
 include './BrightCove/getBCinclude_device_os.php';
-
+include './BrightCove/getBCinclude_video_multipledimensions.php';
 
 #include './BrightCove/getBCinclude_account.php';
 
@@ -120,6 +119,11 @@ include './BrightCove/loadbcinclude_source_type.php';
 include './BrightCove/loadbcinclude_search_terms.php';
 include './BrightCove/loadbcinclude_device_type.php';
 include './BrightCove/loadbcinclude_device_os.php';
+include './BrightCove/loadbcinclude_video_country.php';
+include './BrightCove/loadbcinclude_video_device.php';
+include './BrightCove/loadbcinclude_video_destination.php';
+include './BrightCove/loadbcinclude_video_referrer.php';
+
 
 if ($rowsaffected=0 ){
 exit (999);
