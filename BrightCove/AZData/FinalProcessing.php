@@ -5,6 +5,7 @@ $debug=1;
 /*first log in*/
 $connect = pg_connect($BrightCoveModifyCredentials);
 $sql="
+
 update broadcaster_details
 set username = trim(lower(replace(replace(username,'-',''),'_','')));
 
@@ -16,7 +17,7 @@ set azbroadcaster=trim(lower(replace(replace(azbroadcaster,'-',''),'_','')));
 update bc_videos
 set azbroadcaster=trim(lower(replace(replace(azbroadcaster,'-',''),'_','')));
 
-
+delete from bc_videos_rollup where bc_dt >= (select max(bc_dt)-2 from  bc_videos_rollup );
   insert into bc_videos_rollup
 select max(nvl(account,0)) 
        , max(nvl(account_name,'')) bc_account_name
@@ -53,7 +54,7 @@ and video_reference_id is not null
   
 
 
-
+delete from zencoder_rollup where zc_created_at >= (select max(zc_created_at)-2 from  zencoder_rollup );
   INSERT INTO dev.public.zencoder_rollup (zc_audio_bitrate_in_kbps
        , zc_audio_codec
        , zc_audio_sample_rate
@@ -139,7 +140,7 @@ and video_reference_id is not null
 and video_reference_id is not null
  group by video_reference_id;
  
-
+truncate table dev.public.broadcaster_details_rollup;
  INSERT INTO dev.public.broadcaster_details_rollup 
 select
 max(id_user)
@@ -167,6 +168,7 @@ max(id_user)
 from broadcaster_details b
   where not exists (Select 1 from broadcaster_details_rollup br where br.b_username=b.username)
  group by username;
+
  
 ";
 if ($debug==1)
