@@ -123,6 +123,7 @@ include './BrightCove/loadbcinclude_video_country.php';
 include './BrightCove/loadbcinclude_video_device.php';
 include './BrightCove/loadbcinclude_video_destination.php';
 include './BrightCove/loadbcinclude_video_referrer.php';
+#include './BrightCove/loadbcinclude_video_source.php';
 
 
 if ($rowsaffected=0 ){
