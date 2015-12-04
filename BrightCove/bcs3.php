@@ -1,6 +1,9 @@
 <?php
 error_reporting(E_ERROR | E_PARSE);
-require "s3.php";
+
+require "$s3page";
+
+include './BrightCove/credentials/BrightCoveCredentials.php';
 echo "Inside BCS3 \n";
 //date_default_timezone_set('America/Los_Angeles');//or change to whatever timezone you want
 $date = filemtime(".");
@@ -11,6 +14,7 @@ $accessKey = $S3accessKey;
 $secretKey = $S3secretKey;
 $bucketName = $S3bucketName;
 $sourceDir = $S3sourceDir;
+echo "\n\nbucketName: $bucketName \n\n";
 //$cacheDuration = 3600 * 24 * 30;
 $fileAcl = S3::ACL_PUBLIC_READ;
 $s3 = new S3($accessKey, $secretKey);

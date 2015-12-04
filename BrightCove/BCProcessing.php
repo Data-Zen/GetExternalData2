@@ -104,6 +104,8 @@ include './BrightCove/getBCinclude_video_multipledimensions.php';
 
 include './BrightCove/bcs3.php';
 
+
+include './BrightCove/loadbcinclude_tags.php';
 include './BrightCove/loadbcinclude_video.php';
 include './BrightCove/loadbcinclude_account.php';
 include './BrightCove/loadbcinclude_player.php';
