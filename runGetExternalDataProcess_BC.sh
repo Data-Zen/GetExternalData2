@@ -37,9 +37,7 @@ cd $MyPath
   
   php ./BrightCove/getBCtags_first.php 
 
-  php ./BrightCove/bcs3.php
-  #php ./BrightCove/AZData/LoadBroadcasterData.php 
-  php ./BrightCove/loadbcinclude_tags.php 
+
 let errorloop=0
 
 while [ $a -le $loop ]

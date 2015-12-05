@@ -114,6 +114,11 @@ file_put_contents($file, $cleanresult);
 //exec('php getBC.php "19 october 2015 "20 october 2015" 10 >/dev/null');
 //exec ('whoami');
 
+  include './BrightCove/bcs3.php';
+  include './BrightCove/loadbcinclude_tags.php';
+  #php ./BrightCove/AZData/LoadBroadcasterData.php 
+  
+
 
 ?>
 

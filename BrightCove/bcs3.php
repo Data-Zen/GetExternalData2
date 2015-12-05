@@ -1,9 +1,9 @@
 <?php
 error_reporting(E_ERROR | E_PARSE);
 
+include './BrightCove/credentials/BrightCoveCredentials.php';
 require "$s3page";
 
-include './BrightCove/credentials/BrightCoveCredentials.php';
 echo "Inside BCS3 \n";
 //date_default_timezone_set('America/Los_Angeles');//or change to whatever timezone you want
 $date = filemtime(".");
