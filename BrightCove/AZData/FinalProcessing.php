@@ -180,7 +180,7 @@ update broadcaster_details_rollup set b_rank=rr.rank
 from ( select bc_azbroadcaster,
 rank() over (order by sum(nvl(bc_video_seconds_viewed ,0)) desc) as rank
 from bc_videos_rollup
-where bc_dt > dateadd(d,-10,getdate()::date)
+where bc_dt > dateadd(d,-7,(select max(bc_dt) from bc_videos_rollup)::date)
 group by bc_azbroadcaster) rr
 where broadcaster_details_rollup.b_username=rr.bc_azbroadcaster
 and broadcaster_details_rollup.b_package not ilike 'open';
