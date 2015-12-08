@@ -182,10 +182,19 @@ rank() over (order by sum(nvl(bc_video_seconds_viewed ,0)) desc) as rank
 from bc_videos_rollup
 where bc_dt > dateadd(d,-7,(select max(bc_dt) from bc_videos_rollup)::date)
 group by bc_azbroadcaster) rr
-where broadcaster_details_rollup.b_username=rr.bc_azbroadcaster
-and broadcaster_details_rollup.b_package not ilike 'open';
+where broadcaster_details_rollup.b_username=rr.bc_azbroadcaster;
 
 update broadcaster_details_rollup set b_rank=9999 where b_rank is null;
+
+
+delete from broadcaster_Top_40 where dt = getdate()::date;
+insert into broadcaster_Top_40
+select b_username,b_rank,getdate()::date  from public.broadcaster_details_rollup where b_rank <=40
+and datepart(dow,getdate())=4  --Only do this on Thursday
+;
+
+
+
 
  
 ";
