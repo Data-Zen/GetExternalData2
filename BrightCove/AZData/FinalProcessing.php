@@ -140,34 +140,52 @@ delete from zencoder_rollup where zc_created_at >= (select max(zc_created_at)-2 
 and video_reference_id is not null
  group by video_reference_id;
  
+
 truncate table dev.public.broadcaster_details_rollup;
+
  INSERT INTO dev.public.broadcaster_details_rollup 
 select
-max(id_user)
+max(id_user) id_user
        , username
-       , max(email)
-       , max(user_status)
-       , max(channel_status)
-       , max(role)
-       , max(package)
-       , max(package_abbrev)
-       , max(team)
-       , max(organization)
-       , max(user_date_created)
-       , max(channel_date_created)
-       , max(channel_time_created)
-       , max(channel_date_updated)
-       , max(followers_count)
-       , max(unfollowers_count)
-       , max(month)
-       , max(week)
-       , max(channel_name)
-       , max(last_broadcasted_date)
-       , max(channel_frozen_date)
-       , max(analytics_ignore)
+       , max(email) email
+       , max(user_status) user_status
+       , max(channel_status) channel_status
+       , max(role) role
+       , max(package) package
+       , max(package_abbrev) package_abbrev
+       , case when max(team) = ''  then username else max(team) end team
+       , max(organization) organization
+       , max(user_date_created)  user_date_created
+       , max(channel_date_created) channel_date_created
+       , max(channel_time_created) channel_time_created
+       , max(channel_date_updated) channel_date_updated
+       , max(followers_count) followers_count
+       , max(unfollowers_count) unfollowers_count
+       , max(month) as month
+       , max(week) as week
+       , max(channel_name) channel_name
+       , max(last_broadcasted_date) last_broadcasted_date
+       , max(channel_frozen_date) channel_frozen_date
+       , max(analytics_ignore) analytics_ignore
+          ,null
 from broadcaster_details b
-  where not exists (Select 1 from broadcaster_details_rollup br where br.b_username=b.username)
+ --where not exists (Select 1 from broadcaster_details_rollup br where br.b_username=b.username)
  group by username;
+ 
+ 
+
+
+
+update broadcaster_details_rollup set b_rank=rr.rank
+from ( select bc_azbroadcaster,
+rank() over (order by sum(nvl(bc_video_seconds_viewed ,0)) desc) as rank
+from bc_videos_rollup
+where bc_dt > dateadd(d,-10,getdate()::date)
+group by bc_azbroadcaster) rr
+where broadcaster_details_rollup.b_username=rr.bc_azbroadcaster
+and broadcaster_details_rollup.b_package not ilike 'open';
+
+update broadcaster_details_rollup set b_rank=9999 where b_rank is null;
 
  
 ";
