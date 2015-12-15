@@ -7,7 +7,7 @@ $connect = pg_connect($BrightCoveModifyCredentials);
 
 
 
-$sql = "drop table if exists broadcaster_details_stg;
+$sql = "/*drop table if exists broadcaster_details_stg;
 create table broadcaster_details_stg
 (
 ID_User BIGINT ENCODE lzo
@@ -29,7 +29,7 @@ ID_User BIGINT ENCODE lzo
 ,Last_Broadcasted_Date VARCHAR(10000) ENCODE lzo
 ,Channel_Frozen_Date VARCHAR(10000) ENCODE lzo
 );
-
+*/
 copy broadcaster_details_stg
 from 's3://$S3bucketName/broadcasters.csv' with 
 credentials 'aws_access_key_id=$S3accessKey;aws_secret_access_key=$S3secretKey' 

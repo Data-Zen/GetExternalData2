@@ -19,7 +19,7 @@ ZC=1
 date
 START_TIME=$SECONDS
 MyPath="/home/paul/scripts/GetExternalData"
-daysback=10
+daysback=1
 #daysback=160
 let sleepv=1
 if [ "$backfill" -eq 1 ] ; then
@@ -83,6 +83,7 @@ fi
 #date
 ELAPSED_TIME=$(($SECONDS - $START_TIME))
 
+php ./BrightCove/AZData/GetBroadcasterData_live.php 
 php ./BrightCove/AZData/GetBroadcasterData.php 
 php ./BrightCove/AZData/FinalProcessing.php
 
