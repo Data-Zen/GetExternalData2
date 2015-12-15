@@ -140,20 +140,55 @@ delete from zencoder_rollup where zc_created_at >= (select max(zc_created_at)-2 
 and video_reference_id is not null
  group by video_reference_id;
  
+drop table if exists public.broadcaster_details_rollup;
+CREATE TABLE public.broadcaster_details_rollup
+(
+       b_id_user BIGINT ENCODE lzo,
+       b_username VARCHAR(10000) ENCODE lzo DISTKEY,
+       b_email VARCHAR(10000) ENCODE lzo,
+       b_user_status VARCHAR(10000) ENCODE lzo,
+       b_channel_status VARCHAR(10000) ENCODE lzo,
+       b_role VARCHAR(10000) ENCODE lzo,
+       b_package VARCHAR(10000) ENCODE lzo,
+       b_package_abbrev VARCHAR(10) ENCODE lzo,
+       b_team VARCHAR(10000) ENCODE lzo,
+       b_organization VARCHAR(10000) ENCODE lzo,
+       b_user_date_created VARCHAR(10000) ENCODE lzo,
+       b_channel_date_created VARCHAR(10000) ENCODE lzo,
+       b_channel_time_created VARCHAR(10000) ENCODE lzo,
+       b_channel_date_updated VARCHAR(10000) ENCODE lzo,
+       b_followers_count BIGINT ENCODE lzo,
+       b_unfollowers_count BIGINT ENCODE lzo,
+       b_month VARCHAR(10000) ENCODE lzo,
+       b_week VARCHAR(10000) ENCODE lzo,
+       b_channel_name VARCHAR(10000) ENCODE lzo,
+       b_last_broadcasted_date VARCHAR(10000) ENCODE lzo,
+       b_channel_frozen_date VARCHAR(10000) ENCODE lzo,
+       b_analytics_ignore SMALLINT,
+       b_rank INTEGER ENCODE lzo,
+       b_azubuteam VARCHAR(10000) ENCODE lzo
+)
+SORTKEY
+(
+       b_username
+);
 
-truncate table dev.public.broadcaster_details_rollup;
+GRANT ALL ON TABLE public.broadcaster_details_rollup TO GROUP admin_group;
+GRANT SELECT ON TABLE public.broadcaster_details_rollup TO GROUP readonly;
+
 
  INSERT INTO dev.public.broadcaster_details_rollup 
+
 select
 max(id_user) id_user
-       , username
+       , a.username
        , max(email) email
        , max(user_status) user_status
        , max(channel_status) channel_status
        , max(role) role
        , max(package) package
        , max(package_abbrev) package_abbrev
-       , case when max(team) = ''  then username else max(team) end team
+       , case when max(team) = ''  then a.username else max(team) end team
        , max(organization) organization
        , max(user_date_created)  user_date_created
        , max(channel_date_created) channel_date_created
@@ -167,10 +202,11 @@ max(id_user) id_user
        , max(last_broadcasted_date) last_broadcasted_date
        , max(channel_frozen_date) channel_frozen_date
        , max(analytics_ignore) analytics_ignore
-          ,null
-from broadcaster_details b
- --where not exists (Select 1 from broadcaster_details_rollup br where br.b_username=b.username)
- group by username;
+       , null
+       , case when max(b.azubuteam) is null  then a.username else max(azubuteam) end azubuteam
+from broadcaster_details a left join broadcaster_details_azubuteams b on a.username=b.username
+--where not exists (Select 1 from broadcaster_details_rollup br where br.b_username=b.username)
+ group by a.username;
  
  
 
@@ -178,7 +214,7 @@ from broadcaster_details b
 
 update broadcaster_details_rollup set b_rank=rr.rank
 from ( select bc_azbroadcaster,
-rank() over (order by sum(nvl(bc_video_seconds_viewed ,0)) desc) as rank
+rank() over (order by sum(nvl(bc_video_seconds_viewed ,0)) desc, sum(nvl(bc_video_view ,0)) desc) as rank
 from bc_videos_rollup
 where bc_dt > dateadd(d,-7,(select max(bc_dt) from bc_videos_rollup)::date)
 group by bc_azbroadcaster) rr
@@ -188,10 +224,71 @@ update broadcaster_details_rollup set b_rank=9999 where b_rank is null;
 
 
 delete from broadcaster_Top_40 where dt = getdate()::date;
-insert into broadcaster_Top_40
-select b_username,b_rank,getdate()::date  from public.broadcaster_details_rollup where b_rank <=40
+/*
+ insert into broadcaster_Top_40
+with st as ( select getdate()::date as stdt)
+, current_ranking as (
+ select bc_azbroadcaster azbroadcaster,
+rank() over (order by sum(nvl(bc_video_seconds_viewed ,0)) desc, sum(nvl(bc_video_view ,0)) desc) as rank
+,max(st.stdt) stdt
+from bc_videos_rollup join st on 1=1
+where bc_dt between dateadd(d,-7,st.stdt) and st.stdt
+group by bc_azbroadcaster ) 
+select azbroadcaster,rank,stdt,nvl(WeeksOnTop40+1,1) WeeksOnTop40 from (
+select *,(select WeeksOnTop40 from broadcaster_Top_40 bt where bt.dt = (select max(dt) from broadcaster_Top_40) and bt.azbroadcaster=current_ranking.azbroadcaster)  WeeksOnTop40
+from current_ranking)
+where rank <=40
 and datepart(dow,getdate())=4  --Only do this on Thursday
+order by 2
 ;
+
+*/
+
+
+INSERT INTO broadcaster_Top_40
+WITH st AS (
+                                SELECT getdate()::DATE AS stdt
+                                )
+                , current_ranking AS (
+                                SELECT b_azubuteam
+                                                , rank() OVER (
+                                                                ORDER BY sum(nvl(bc_video_seconds_viewed, 0)) DESC
+                                                                                , sum(nvl(bc_video_view, 0)) DESC
+                                                                ) AS rank
+                                                , max(st.stdt) stdt
+                                FROM bc_videos_rollup a
+                                INNER JOIN PUBLIC.broadcaster_details_rollup b
+                                                ON bc_azbroadcaster = b_username
+                                INNER JOIN st
+                                                ON 1 = 1
+                                WHERE bc_dt BETWEEN dateadd(d, - 7, st.stdt)
+                                                                AND st.stdt
+                                GROUP BY b_azubuteam
+                                )
+SELECT b_azubuteam
+                , rank
+                , stdt
+                , nvl(WeeksOnTop40 + 1, 1) WeeksOnTop40
+FROM (
+                SELECT *
+                                , (
+                                                SELECT WeeksOnTop40
+                                                FROM broadcaster_Top_40 bt
+                                                WHERE bt.dt = (
+                                                                                SELECT max(dt)
+                                                                                FROM broadcaster_Top_40
+                                                                                )
+                                                                AND bt.azbroadcaster = current_ranking.b_azubuteam
+                                                ) WeeksOnTop40
+                FROM current_ranking
+                )
+WHERE rank <= 40
+                AND datepart(dow, getdate()) = 4 --Only do this on Thursday
+ORDER BY 2;
+
+
+
+
 
 
 

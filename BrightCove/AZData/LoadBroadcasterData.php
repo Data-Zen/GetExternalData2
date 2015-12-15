@@ -38,6 +38,10 @@ IGNOREHEADER 1
 $S3Region;
 
 
+alter table broadcaster_details_stg add cleanusername varchar(1000) encode lzo;
+update broadcaster_details_stg set cleanusername = lower(replace(replace(username,'-',''),'_',''));
+
+
 drop table if exists broadcaster_details;
 create table broadcaster_details
 (
@@ -63,58 +67,91 @@ ID_User BIGINT ENCODE lzo
 );
 
 
-
-INSERT INTO dev.public.broadcaster_details (id_user
-       , username
-       , email
-       , user_status
-       , channel_status
-       , role
-       , package
-	   , Package_abbrev
-       , team
-       , organization
-       , user_date_created
-       , channel_date_created
-       , channel_time_created
-       , channel_date_updated
-       , followers_count
-       , unfollowers_count
-       , month
-       , week
-       , channel_name
-       , last_broadcasted_date
-       , channel_frozen_date
-      
-) 
-
-select distinct
-		 max(id_user)
-       , trim(lower(replace(replace(username,'-',''),'_','')) )
-       , max(email) 
-       , max(user_status) 
-       , max(channel_status)
-       , max(role)
-       , max(package)
-	   , max(substring(package,1,4)) 
-       , max(team)
-       , max(organization)
-       , max(user_date_created)
-       , max(channel_date_created)
-       , max(channel_time_created)
-       , max(channel_date_updated)
-       , max(followers_count)
-       , max(unfollowers_count)
-       , max(\"month\")
-       , max(week)
-       , max(channel_name)
-       , max(last_broadcasted_date)
-       , max(channel_frozen_date)
-	
- From 
- broadcaster_details_stg
- where trim(username) <> ''
- group by lower(replace(replace(username,'-',''),'_',''))  
+INSERT INTO dev.PUBLIC.broadcaster_details (
+                id_user
+                , username
+                , email
+                , user_status
+                , channel_status
+                , ROLE
+                , package
+                , Package_abbrev
+                , team
+                , organization
+                , user_date_created
+                , channel_date_created
+                , channel_time_created
+                , channel_date_updated
+                , followers_count
+                , unfollowers_count
+                , month
+                , week
+                , channel_name
+                , last_broadcasted_date
+                , channel_frozen_date
+                )
+SELECT id_user
+                , username
+                , email
+                , user_status
+                , channel_status
+                , ROLE
+                , package
+                , substring(package, 1, 4)
+                , team
+                , organization
+                , user_date_created
+                , channel_date_created
+                , channel_time_created
+                , channel_date_updated
+                , followers_count
+                , unfollowers_count
+                , \"month\"
+                , week
+                , channel_name
+                , last_broadcasted_date
+                , channel_frozen_date
+FROM (
+                SELECT id_user
+                                , cleanusername AS username
+                                , email
+                                , user_status
+                                , channel_status
+                                , ROLE
+                                , package
+                                , substring(package, 1, 4)
+                                , team
+                                , organization
+                                , user_date_created
+                                , channel_date_created
+                                , channel_time_created
+                                , channel_date_updated
+                                , followers_count
+                                , unfollowers_count
+                                , \"month\"
+                                , week
+                                , channel_name
+                                , last_broadcasted_date
+                                , channel_frozen_date
+                                , rank() OVER (
+                                                PARTITION BY cleanusername ORDER BY CASE 
+                                                                                WHEN channel_status ilike 'active'
+                                                                                                THEN 1
+                                                                                ELSE 0
+                                                                                END DESC
+                                                                , nvl(followers_count, 0) DESC
+                                                                , user_date_created ASC
+                                                                , id_user ASC
+                                                ) AS rnk
+                FROM broadcaster_details_stg
+               /* WHERE cleanusername IN (
+                                                SELECT cleanusername
+                                                FROM broadcaster_details_stg
+                                                GROUP BY cleanusername
+                                                HAVING count(1) > 1
+                                                )*/
+                )
+WHERE rnk = 1;  
 ";
 
 
