@@ -1,5 +1,9 @@
 <?php
 
+
+
+
+echo "\n\n*******Running FinalProcessing.php*************";
 include './BrightCove/credentials/BrightCoveCredentials.php';
 $debug=1;
 /*first log in*/
@@ -17,7 +21,7 @@ set azbroadcaster=trim(lower(replace(replace(azbroadcaster,'-',''),'_','')));
 update bc_videos
 set azbroadcaster=trim(lower(replace(replace(azbroadcaster,'-',''),'_','')));
 
-delete from bc_videos_rollup where bc_dt >= (select max(bc_dt)-2 from  bc_videos_rollup );
+delete from bc_videos_rollup where bc_dt >= (select max(bc_dt)-30 from  bc_videos_rollup );
   insert into bc_videos_rollup
 select max(nvl(account,0)) 
        , max(nvl(account_name,'')) bc_account_name
@@ -54,7 +58,7 @@ and video_reference_id is not null
   
 
 
-delete from zencoder_rollup where zc_created_at >= (select max(zc_created_at)-2 from  zencoder_rollup );
+delete from zencoder_rollup where zc_created_at >= (select max(zc_created_at)-30 from  zencoder_rollup );
   INSERT INTO dev.public.zencoder_rollup (zc_audio_bitrate_in_kbps
        , zc_audio_codec
        , zc_audio_sample_rate

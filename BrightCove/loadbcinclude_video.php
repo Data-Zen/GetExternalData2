@@ -155,10 +155,14 @@ where azvideoid is null;
 
 
 /*  Delete existing data so that we can load clean data*/
-delete from public.bc_videos 
+/*delete from public.bc_videos 
 where exists 
 (select 1 from public.bc_videos_staging b where public.bc_videos.video=b.video and public.bc_videos.dt=b.dt);
+*/
 
+delete from public.bc_videos 
+where dt in 
+(select distinct dt from public.bc_videos_staging b );
 
 /* Load the final de-duped data */
 insert into public.bc_videos
