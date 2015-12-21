@@ -75,8 +75,8 @@ update bc_country_staging set dt = '$fromdate';
 
 /*  Delete existing data so that we can load clean data*/
 delete from public.bc_country
-where exists 
-(select 1 from public.bc_country_staging b where public.bc_country.country=b.country and public.bc_country.dt=b.dt);
+where dt in 
+(select distinct dt from public.bc_country_staging b );
 
 
 /* Load the final de-duped data */

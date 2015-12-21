@@ -72,8 +72,8 @@ update bc_referrer_domain_staging set dt = '$fromdate';
 
 /*  Delete existing data so that we can load clean data*/
 delete from public.bc_referrer_domain
-where exists 
-(select 1 from public.bc_referrer_domain_staging b where public.bc_referrer_domain.dt=b.dt );
+where dt in 
+(select distinct dt  from public.bc_referrer_domain_staging b );
 
 
 /* Load the final de-duped data */

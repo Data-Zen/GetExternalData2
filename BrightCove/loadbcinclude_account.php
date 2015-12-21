@@ -77,8 +77,8 @@ update bc_account_staging set dt = '$fromdate';
 
 /*  Delete existing data so that we can load clean data*/
 delete from public.bc_account
-where exists 
-(select 1 from public.bc_account_staging b where public.bc_account.account=b.account and public.bc_account.dt=b.dt);
+where dt in
+(select distinct dt from public.bc_account_staging b);
 
 
 /* Load the final de-duped data */

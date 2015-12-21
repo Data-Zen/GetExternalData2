@@ -12,6 +12,13 @@ SHELL=/bin/bash
 #echo "Hello World!"
 #loop=$1
 
+if mkdir /tmp/lock_GetExternalData; then
+  echo "Running Script" >&2
+else
+  echo "Script Already running. Lock Creation Failed failed - exit" >&2
+  exit 1
+fi
+
 
 backfill=0
 ZC=1
@@ -19,7 +26,7 @@ ZC=1
 date
 START_TIME=$SECONDS
 MyPath="/home/paul/scripts/GetExternalData"
-daysback=30
+daysback=5
 #daysback=160
 let sleepv=1
 if [ "$backfill" -eq 1 ] ; then
@@ -81,15 +88,21 @@ if [ "$ZC" -eq 1 ]; then
 	php ./ZenCoder/GetZenCoderLoop.php
 fi
 #date
-ELAPSED_TIME=$(($SECONDS - $START_TIME))
-
+ELAPSED_TIME_ZC=$(($SECONDS - $START_TIME))
+START_TIME=$SECONDS
 php ./BrightCove/AZData/GetBroadcasterData_live.php 
 php ./BrightCove/AZData/GetBroadcasterData.php 
 php ./BrightCove/AZData/FinalProcessing.php
 
-let ELAPSED_TIME_Minutes=$ELAPSED_TIME/60
+rm -rf /tmp/lock_GetExternalData
+ELAPSED_TIME_FP=$(($SECONDS - $START_TIME))
+
+let ELAPSED_TIME_Minutes_ZC=$ELAPSED_TIME_ZC/60
+let ELAPSED_TIME_Minutes_FP=$ELAPSED_TIME_FP/60
 echo "ELAPSED_TIME in SECONDS for BC:" $ELAPSED_TIME_BC
 echo "ELAPSED_TIME in Minutes for BC:" $ELAPSED_TIME_BC_Minutes
-echo "ELAPSED_TIME in SECONDS for ZC:" $ELAPSED_TIME
+echo "ELAPSED_TIME in SECONDS for ZC:" $ELAPSED_TIME_ZC
+echo "ELAPSED_TIME in Minutes for ZC:" $ELAPSED_TIME_Minutes_ZC
+echo "ELAPSED_TIME in SECONDS for FP:" $ELAPSED_TIME_FP
+echo "ELAPSED_TIME in Minutes for FP:" $ELAPSED_TIME_Minutes_FP
 
-echo "ELAPSED_TIME in Minutes for ZC:" $ELAPSED_TIME_Minutes

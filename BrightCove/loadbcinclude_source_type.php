@@ -73,8 +73,8 @@ update bc_source_type_staging set dt = '$fromdate';
 
 /*  Delete existing data so that we can load clean data*/
 delete from public.bc_source_type
-where exists 
-(select 1 from public.bc_source_type_staging b where public.bc_source_type.dt=b.dt );
+where dt in 
+(select distinct dt  from public.bc_source_type_staging b);
 
 
 /* Load the final de-duped data */

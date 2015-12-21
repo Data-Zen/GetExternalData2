@@ -78,8 +78,8 @@ update bc_date_staging set dt = '$fromdate';
 
 /*  Delete existing data so that we can load clean data*/
 delete from public.bc_date
-where exists 
-(select 1 from public.bc_date_staging b where public.bc_date.date=b.date );
+where date in 
+(select distinct date from public.bc_date_staging b );
 
 
 /* Load the final de-duped data */

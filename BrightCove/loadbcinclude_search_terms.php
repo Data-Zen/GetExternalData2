@@ -74,8 +74,8 @@ update bc_search_terms_staging set dt = '$fromdate';
 
 /*  Delete existing data so that we can load clean data*/
 delete from public.bc_search_terms
-where exists 
-(select 1 from public.bc_search_terms_staging b where public.bc_search_terms.dt=b.dt );
+where dt in 
+(select distinct dt  from public.bc_search_terms_staging b );
 
 
 /* Load the final de-duped data */

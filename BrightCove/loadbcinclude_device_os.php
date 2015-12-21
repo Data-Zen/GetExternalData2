@@ -73,8 +73,8 @@ update bc_device_os_staging set dt = '$fromdate';
 
 /*  Delete existing data so that we can load clean data*/
 delete from public.bc_device_os
-where exists 
-(select 1 from public.bc_device_os_staging b where public.bc_device_os.dt=b.dt );
+where dt in 
+(select distinct dt  from public.bc_device_os_staging b);
 
 
 /* Load the final de-duped data */
