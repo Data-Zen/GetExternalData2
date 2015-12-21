@@ -15,7 +15,8 @@ SHELL=/bin/bash
 if mkdir /tmp/lock_GetExternalData; then
   echo "Running Script" >&2
 else
-  echo "Script Already running. Lock Creation Failed failed - exit" >&2
+  echo "Script Already running. Lock Creation Failed failed - exit
+  If you think this is an error try running: 'rm -rf /tmp/lock_GetExternalData'" >&2
   exit 1
 fi
 
@@ -26,7 +27,7 @@ ZC=1
 date
 START_TIME=$SECONDS
 MyPath="/home/paul/scripts/GetExternalData"
-daysback=5
+daysback=60
 #daysback=160
 let sleepv=1
 if [ "$backfill" -eq 1 ] ; then
