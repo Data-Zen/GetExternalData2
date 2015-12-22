@@ -73,7 +73,7 @@ echo "last Monday", "\n";
 exit;
 }
 
-if((time()-(60*60*24)) <strtotime($todate." UTC")-(86400*4 ))
+if(strtotime('+1 day') <strtotime($todate." UTC"))
 
 {
 echo "\n\n\n\n\nFUTURE \n\n\n\n\n";

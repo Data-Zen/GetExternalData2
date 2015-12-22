@@ -21,36 +21,51 @@ set azbroadcaster=trim(lower(replace(replace(azbroadcaster,'-',''),'_','')));
 update bc_videos
 set azbroadcaster=trim(lower(replace(replace(azbroadcaster,'-',''),'_','')));
 
-delete from bc_videos_rollup where bc_dt >= (select max(bc_dt)-30 from  bc_videos_rollup );
-  insert into bc_videos_rollup
-select max(nvl(account,0)) 
-       , max(nvl(account_name,'')) bc_account_name
-       , sum(nvl(bytes_delivered,0))  bc_bytes_delivered
-       , max(nvl(engagement_score,0))  bc_engagement_score
-       , max(nvl(play_rate,0))  bc_play_rate
-       , max(nvl(video,0)) bc_video
-       , max(nvl(video_duration,0)) bc_video_duration
-       , max(nvl(video_engagement_1,0)) bc_video_engagement_1
-       , max(nvl(video_engagement_100,0)) bc_video_engagement_100
-       , max(nvl(video_engagement_25,0)) bc_video_engagement_25
-       , max(nvl(video_engagement_50,0)) bc_video_engagement_50
-       , max(nvl(video_engagement_75,0))  bc_video_engagement_75
-       , sum(nvl(video_impression,0))  bc_video_impression
-       , max(nvl(video_name,'')) bc_video_name 
-       , max(nvl(video_percent_viewed,0))  bc_video_percent_viewed
-       , sum(nvl(video_seconds_viewed,0))  bc_video_seconds_viewed
-       , sum(nvl(video_view,0))  bc_video_view
-       , video_reference_id  bc_video_reference_id
-       , max(nvl(videoname,'')) bc_videoname
-       , max(nvl(videotags,'')) bc_videotags
-       , min(nvl(dt,'2001-01-01')) bc_dt
-       , max(nvl(azvideoid,0)) bc_azvideoid
-       , max(nvl(azvideotype,''))  bc_azvideotype
-       , max(nvl(azbroadcaster,'')) bc_azbroadcaster
- from bc_videos b
- where not exists (Select 1 from bc_videos_rollup br where br.bc_video_reference_id=b.video_reference_id)
-and video_reference_id is not null
-  group by video_reference_id;
+delete from bc_videos_rollup where bc_dt >= (select max(bc_dt)-60 from  bc_videos_rollup );
+ insert into bc_videos_rollup
+WITH rankings AS
+  (SELECT *
+   FROM
+     (SELECT *,
+             rank() over (partition BY video_reference_id
+                          ORDER BY video_view DESC, video_seconds_viewed DESC, dt desc) AS rank
+      FROM bc_videos b
+      WHERE video_reference_id IS NOT NULL
+        AND NOT EXISTS
+          (SELECT 1
+           FROM bc_videos_rollup br
+           WHERE br.bc_video_reference_id=b.video_reference_id) )
+   WHERE rank=1)
+
+
+SELECT max(nvl(account,0)),
+       max(nvl(account_name,'')) bc_account_name ,
+       sum(nvl(bytes_delivered,0)) bc_bytes_delivered ,
+       max(nvl(engagement_score,0)) bc_engagement_score ,
+       max(nvl(play_rate,0)) bc_play_rate ,
+       max(nvl(video,0)) bc_video ,
+       max(nvl(video_duration,0)) bc_video_duration ,
+       max(nvl(video_engagement_1,0)) bc_video_engagement_1 ,
+       max(nvl(video_engagement_100,0)) bc_video_engagement_100 ,
+       max(nvl(video_engagement_25,0)) bc_video_engagement_25 ,
+       max(nvl(video_engagement_50,0)) bc_video_engagement_50 ,
+       max(nvl(video_engagement_75,0)) bc_video_engagement_75 ,
+       sum(nvl(video_impression,0)) bc_video_impression ,
+       max(nvl(video_name,'')) bc_video_name,
+       max(nvl(video_percent_viewed,0)) bc_video_percent_viewed ,
+       sum(nvl(video_seconds_viewed,0)) bc_video_seconds_viewed ,
+       sum(nvl(video_view,0)) bc_video_view ,
+       video_reference_id bc_video_reference_id ,
+       max(nvl(videoname,'')) bc_videoname ,
+       max(nvl(videotags,'')) bc_videotags ,
+       max(nvl(dt,'2001-01-01')) bc_dt ,
+       max(nvl(azvideoid,0)) bc_azvideoid ,
+       max(nvl(azvideotype,'')) bc_azvideotype ,
+       max(nvl(azbroadcaster,'')) bc_azbroadcaster
+FROM rankings b
+GROUP BY video_reference_id;
+
+
 
   
 

@@ -164,7 +164,7 @@ $sql = "
 
 GRANT SELECT ON TABLE public.broadcaster_details TO GROUP readonly;
 
-alter table broadcaster_details add analytics_ignore smallint;
+alter table broadcaster_details add analytics_ignore smallint encode lzo;
 truncate table broadcaster_details_rollup;
 update broadcaster_details
 set analytics_ignore=0;

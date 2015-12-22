@@ -167,7 +167,8 @@ where dt in
 /* Load the final de-duped data */
 insert into public.bc_videos
 select distinct * from public.bc_videos_staging a
-where not exists (select 1 from public.bc_videos b where a.video=b.video and a.dt=b.dt);
+where not exists (select 1 from public.bc_videos b where a.video=b.video and a.dt=b.dt)
+and video_seconds_viewed > 0;
 
 ";
 
