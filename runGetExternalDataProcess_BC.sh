@@ -27,7 +27,7 @@ ZC=1
 date
 START_TIME=$SECONDS
 MyPath="/home/paul/scripts/GetExternalData"
-daysback=640
+daysback=120
 #daysback=160
 let sleepv=1
 if [ "$backfill" -eq 1 ] ; then
@@ -106,4 +106,4 @@ echo "ELAPSED_TIME in SECONDS for ZC:" $ELAPSED_TIME_ZC
 echo "ELAPSED_TIME in Minutes for ZC:" $ELAPSED_TIME_Minutes_ZC
 echo "ELAPSED_TIME in SECONDS for FP:" $ELAPSED_TIME_FP
 echo "ELAPSED_TIME in Minutes for FP:" $ELAPSED_TIME_Minutes_FP
-
+date

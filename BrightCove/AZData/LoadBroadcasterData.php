@@ -90,7 +90,7 @@ INSERT INTO dev.PUBLIC.broadcaster_details (
                 , last_broadcasted_date
                 , channel_frozen_date
                 )
-SELECT id_user
+SELECT  id_user
                 , username
                 , email
                 , user_status
@@ -117,7 +117,7 @@ FROM (
                                 , email
                                 , user_status
                                 , channel_status
-                                , ROLE
+                                , max(ROLE) ROLE
                                 , package
                                 , substring(package, 1, 4)
                                 , team
@@ -144,12 +144,26 @@ FROM (
                                                                 , id_user ASC
                                                 ) AS rnk
                 FROM broadcaster_details_stg
-               /* WHERE cleanusername IN (
-                                                SELECT cleanusername
-                                                FROM broadcaster_details_stg
-                                                GROUP BY cleanusername
-                                                HAVING count(1) > 1
-                                                )*/
+               group by id_user
+                                , cleanusername 
+                                , email
+                                , user_status
+                                , channel_status
+                                , package
+                                , substring(package, 1, 4)
+                                , team
+                                , organization
+                                , user_date_created
+                                , channel_date_created
+                                , channel_time_created
+                                , channel_date_updated
+                                , followers_count
+                                , unfollowers_count
+                                , \"month\"
+                                , week
+                                , channel_name
+                                , last_broadcasted_date
+                                , channel_frozen_date
                 )
 WHERE rnk = 1;  
 ";
