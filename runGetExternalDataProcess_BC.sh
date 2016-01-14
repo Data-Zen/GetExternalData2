@@ -27,7 +27,7 @@ ZC=1
 date
 START_TIME=$SECONDS
 MyPath="/home/paul/scripts/GetExternalData"
-daysback=120
+daysback=561
 #daysback=160
 let sleepv=1
 if [ "$backfill" -eq 1 ] ; then

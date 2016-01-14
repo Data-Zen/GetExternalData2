@@ -189,8 +189,8 @@ SELECT max(id_user) id_user,
                  max(package) package,
                  max(package_abbrev) package_abbrev,
                  CASE
-                     WHEN max(nvl(team,'')) <> '' THEN max(team)
-                     WHEN max(b.azubuteam) IS NOT NULL THEN max(b.azubuteam)
+                     WHEN max(nvl(team,'')) <> '' THEN max(lower(team))
+                     WHEN max(b.azubuteam) IS NOT NULL THEN max(lower(b.azubuteam))
                      ELSE a.username
                  END team,
                  max(organization) organization,
@@ -208,8 +208,8 @@ SELECT max(id_user) id_user,
                  max(analytics_ignore) analytics_ignore,
                  NULL,
                  CASE
-                     WHEN max(b.azubuteam) IS NULL THEN a.username
-                     ELSE max(azubuteam)
+                     WHEN max(lower(b.azubuteam)) IS NULL THEN a.username
+                     ELSE max(lower(azubuteam))
                  END azubuteam
 FROM broadcaster_details a
 LEFT JOIN broadcaster_details_azubuteams b ON a.username=b.username --where not exists (Select 1 from broadcaster_details_rollup br where br.b_username=b.username)
