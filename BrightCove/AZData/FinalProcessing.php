@@ -164,104 +164,146 @@ GROUP BY video_reference_id;
 
 
 
+DROP TABLE IF EXISTS PUBLIC.broadcaster_details_rollup;
+                CREATE TABLE PUBLIC.broadcaster_details_rollup (
+                                b_id_user BIGINT ENCODE lzo
+                                , b_username VARCHAR(10000) ENCODE lzo DISTKEY
+                                , b_email VARCHAR(10000) ENCODE lzo
+                                , b_user_status VARCHAR(10000) ENCODE lzo
+                                , b_channel_status VARCHAR(10000) ENCODE lzo
+                                , b_role VARCHAR(10000) ENCODE lzo
+                                , b_package VARCHAR(10000) ENCODE lzo
+                                , b_package_abbrev VARCHAR(10) ENCODE lzo
+                                , b_team VARCHAR(10000) ENCODE lzo
+                                , b_organization VARCHAR(10000) ENCODE lzo
+                                , b_user_date_created VARCHAR(10000) ENCODE lzo
+                                , b_channel_date_created VARCHAR(10000) ENCODE lzo
+                                , b_channel_time_created VARCHAR(10000) ENCODE lzo
+                                , b_channel_date_updated VARCHAR(10000) ENCODE lzo
+                                , b_followers_count BIGINT ENCODE lzo
+                                , b_unfollowers_count BIGINT ENCODE lzo
+                                , b_month VARCHAR(10000) ENCODE lzo
+                                , b_week VARCHAR(10000) ENCODE lzo
+                                , b_channel_name VARCHAR(10000) ENCODE lzo
+                                , b_last_broadcasted_date VARCHAR(10000) ENCODE lzo
+                                , b_channel_frozen_date VARCHAR(10000) ENCODE lzo
+                                , b_analytics_ignore SMALLINT
+                                , b_rank INT ENCODE lzo
+                                , b_azubuteam VARCHAR(10000) ENCODE lzo
+                                ) SORTKEY (b_username);
 
 
 
-DROP TABLE IF EXISTS public.broadcaster_details_rollup;
-
-
-CREATE TABLE public.broadcaster_details_rollup ( b_id_user BIGINT ENCODE lzo, b_username VARCHAR(10000) ENCODE lzo DISTKEY, b_email VARCHAR(10000) ENCODE lzo, b_user_status VARCHAR(10000) ENCODE lzo, b_channel_status VARCHAR(10000) ENCODE lzo, b_role VARCHAR(10000) ENCODE lzo, b_package VARCHAR(10000) ENCODE lzo, b_package_abbrev VARCHAR(10) ENCODE lzo, b_team VARCHAR(10000) ENCODE lzo, b_organization VARCHAR(10000) ENCODE lzo, b_user_date_created VARCHAR(10000) ENCODE lzo, b_channel_date_created VARCHAR(10000) ENCODE lzo, b_channel_time_created VARCHAR(10000) ENCODE lzo, b_channel_date_updated VARCHAR(10000) ENCODE lzo, b_followers_count BIGINT ENCODE lzo, b_unfollowers_count BIGINT ENCODE lzo, b_month VARCHAR(10000) ENCODE lzo, b_week VARCHAR(10000) ENCODE lzo, b_channel_name VARCHAR(10000) ENCODE lzo, b_last_broadcasted_date VARCHAR(10000) ENCODE lzo, b_channel_frozen_date VARCHAR(10000) ENCODE lzo, b_analytics_ignore SMALLINT, b_rank INTEGER ENCODE lzo, b_azubuteam VARCHAR(10000) ENCODE lzo ) SORTKEY ( b_username );
-
- GRANT ALL ON TABLE public.broadcaster_details_rollup TO
+GRANT ALL
+                ON TABLE PUBLIC.broadcaster_details_rollup
+                TO
 GROUP admin_group;
 
- GRANT
-SELECT ON TABLE public.broadcaster_details_rollup TO
+GRANT SELECT
+                ON TABLE PUBLIC.broadcaster_details_rollup
+                TO
 GROUP readonly;
 
-INSERT INTO dev.public.broadcaster_details_rollup
-SELECT max(id_user) id_user,
-       a.username,
-       max(email) email,
-       max(user_status) user_status,
-       max(channel_status) channel_status,
-       max(ROLE) ROLE,
-                 max(package) package,
-                 max(package_abbrev) package_abbrev,
-                 CASE
-                     WHEN max(nvl(team,'')) <> '' THEN max(lower(team))
-                     WHEN max(b.azubuteam) IS NOT NULL THEN max(lower(b.azubuteam))
-                     ELSE a.username
-                 END team,
-                 max(organization) organization,
-                 max(user_date_created) user_date_created,
-                 max(channel_date_created) channel_date_created,
-                 max(channel_time_created) channel_time_created,
-                 max(channel_date_updated) channel_date_updated,
-                 max(followers_count) followers_count,
-                 max(unfollowers_count) unfollowers_count,
-                 max(MONTH) AS MONTH,
-                 max(week) AS week,
-                 max(channel_name) channel_name,
-                 max(last_broadcasted_date) last_broadcasted_date,
-                 max(channel_frozen_date) channel_frozen_date,
-                 max(analytics_ignore) analytics_ignore,
-                 NULL,
-                 CASE
-                     WHEN max(lower(b.azubuteam)) IS NULL THEN a.username
-                     ELSE max(lower(azubuteam))
-                 END azubuteam
-FROM broadcaster_details a
-LEFT JOIN broadcaster_details_azubuteams b ON a.username=b.username --where not exists (Select 1 from broadcaster_details_rollup br where br.b_username=b.username)
 
+
+INSERT INTO dev.PUBLIC.broadcaster_details_rollup
+SELECT max(id_user) id_user
+                , a.username
+                , max(email) email
+                , max(user_status) user_status
+                , max(channel_status) channel_status
+                , max(ROLE) ROLE
+                , max(package) package
+                , max(package_abbrev) package_abbrev
+                , CASE 
+                                WHEN max(nvl(team, '')) <> ''
+                                                THEN max(lower(team))
+                                WHEN max(b.azubuteam) IS NOT NULL
+                                                THEN max(lower(b.azubuteam))
+                                 when lower(max(channel_status)) = 'active' then a.username
+                                END team
+                , max(organization) organization
+                , max(user_date_created) user_date_created
+                , max(channel_date_created) channel_date_created
+                , max(channel_time_created) channel_time_created
+                , max(channel_date_updated) channel_date_updated
+                , max(followers_count) followers_count
+                , max(unfollowers_count) unfollowers_count
+                , max(MONTH) AS MONTH
+                , max(week) AS week
+                , max(channel_name) channel_name
+                , max(last_broadcasted_date) last_broadcasted_date
+                , max(channel_frozen_date) channel_frozen_date
+                , max(analytics_ignore) analytics_ignore
+                , NULL
+                , CASE 
+                                WHEN max(lower(b.azubuteam)) IS NULL and lower(max(channel_status)) ='active'
+                                                THEN a.username
+                                ELSE max(lower(azubuteam))
+                                END azubuteam
+FROM broadcaster_details a
+LEFT JOIN broadcaster_details_azubuteams b
+                ON a.username = b.username --where not exists (Select 1 from broadcaster_details_rollup br where br.b_username=b.username)
 GROUP BY a.username;
 
 
-ALTER TABLE broadcaster_details_rollup ADD b_team_rank int encode lzo;
+
+ALTER TABLE broadcaster_details_rollup ADD b_team_rank INT encode lzo;
 
 
 UPDATE broadcaster_details_rollup
-SET b_rank=NULL;
+SET b_rank = NULL;
 
-
-UPDATE broadcaster_details_rollup
-SET b_rank=rr.rank
-FROM
-  (SELECT bc_azbroadcaster,
-          rank() over (
-                       ORDER BY sum(nvl(bc_video_seconds_viewed,0)) DESC, sum(nvl(bc_video_view,0)) DESC) AS rank
-   FROM bc_videos_rollup
-   WHERE bc_dt >= dateadd(d,-7,
-                            (SELECT max(bc_dt)
-                             FROM bc_videos_rollup)::date)
-     AND bc_video_reference_id IN
-       (SELECT DISTINCT zc_video_reference_id
-        FROM zencoder_rollup
-        WHERE zc_finished_at >= dateadd(d,-7,
-                                          (SELECT max(zc_finished_at)
-                                           FROM zencoder_rollup)::date))
-   GROUP BY bc_azbroadcaster) rr
-WHERE broadcaster_details_rollup.b_username=rr.bc_azbroadcaster;
 
 
 UPDATE broadcaster_details_rollup
-SET b_rank=9999
+SET b_rank = rr.rank
+FROM (
+                SELECT bc_azbroadcaster
+                                , rank() OVER (
+                                                ORDER BY sum(nvl(bc_video_seconds_viewed, 0)) DESC
+                                                                , sum(nvl(bc_video_view, 0)) DESC
+                                                ) AS rank
+                FROM bc_videos_rollup
+                WHERE bc_dt >= dateadd(d, - 7, (
+                                                                SELECT max(bc_dt)
+                                                                FROM bc_videos_rollup
+                                                                )::DATE)
+                                AND bc_video_reference_id IN (
+                                                SELECT DISTINCT zc_video_reference_id
+                                                FROM zencoder_rollup
+                                                WHERE zc_finished_at >= dateadd(d, - 7, (
+                                                                                                SELECT max(zc_finished_at)
+                                                                                                FROM zencoder_rollup
+                                                                                                )::DATE)
+                                                )
+                GROUP BY bc_azbroadcaster
+                ) rr
+WHERE broadcaster_details_rollup.b_username = rr.bc_azbroadcaster;
+
+
+UPDATE broadcaster_details_rollup
+SET b_rank = 9999
 WHERE b_rank IS NULL;
 
 
 UPDATE broadcaster_details_rollup
-SET b_team_rank=br.rank
-FROM
-  ( SELECT b_team,
-           rank() over (
-                        ORDER BY min(b_rank) ASC) AS rank
-   FROM broadcaster_details_rollup
-   GROUP BY b_team) br
-WHERE broadcaster_details_rollup.b_team=br.b_team;
+SET b_team_rank = br.rank
+FROM (
+                SELECT b_team
+                                , rank() OVER (
+                                                ORDER BY min(b_rank) ASC
+                                                ) AS rank
+                FROM broadcaster_details_rollup
+                GROUP BY b_team
+                ) br
+WHERE broadcaster_details_rollup.b_team = br.b_team;
+
+
 
 
 UPDATE broadcaster_details_rollup
-SET b_team_rank=9999
+SET b_team_rank = 9999
 WHERE b_team_rank IS NULL;
 
 
