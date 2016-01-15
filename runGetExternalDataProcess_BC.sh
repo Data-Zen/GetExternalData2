@@ -23,8 +23,14 @@ ZC=1
 
 date
 START_TIME=$SECONDS
-MyPath="/home/paul/scripts/GetExternalData"
-daysback=561
+if [[ $(hostname -s) = *paul* ]]; then
+    MyPath="/home/paul/scripts/GetExternalData"
+  else
+    MyPath="/opt/azububi/GetExternalData"
+fi
+
+
+daysback=30
 #daysback=160
 let sleepv=1
 if [ "$backfill" -eq 1 ] ; then
