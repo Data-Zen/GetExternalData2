@@ -30,7 +30,7 @@ if [[ $(hostname -s) = *paul* ]]; then
 fi
 
 
-daysback=30
+daysback=561
 #daysback=160
 let sleepv=1
 if [ "$backfill" -eq 1 ] ; then
