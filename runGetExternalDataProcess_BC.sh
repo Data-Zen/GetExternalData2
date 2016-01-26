@@ -8,7 +8,7 @@ SHELL=/bin/bash
 
 #echo "Hello World!"
 #loop=$1
-
+date
 if mkdir /tmp/lock_GetExternalData; then
   echo "Running Script" >&2
 else
@@ -21,7 +21,7 @@ fi
 backfill=0
 ZC=1
 
-date
+
 START_TIME=$SECONDS
 if [[ $(hostname -s) = *paul* ]]; then
     MyPath="/home/paul/scripts/GetExternalData"
@@ -30,7 +30,7 @@ if [[ $(hostname -s) = *paul* ]]; then
 fi
 
 
-daysback=90
+daysback=1
 #daysback=160
 let sleepv=1
 if [ "$backfill" -eq 1 ] ; then

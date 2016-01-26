@@ -20,6 +20,56 @@ SET azbroadcaster=trim(lower(replace(replace(azbroadcaster,'-',''),'_','')));
 UPDATE bc_videos
 SET azbroadcaster=trim(lower(replace(replace(azbroadcaster,'-',''),'_','')));
 
+drop table if exists public.bc_videos_rollup_backup;
+CREATE TABLE public.bc_videos_rollup_backup
+(
+  bc_account BIGINT ENCODE lzo,
+  bc_account_name VARCHAR(10000) ENCODE lzo,
+  bc_bytes_delivered DOUBLE PRECISION ENCODE bytedict,
+  bc_engagement_score DOUBLE PRECISION ENCODE bytedict,
+  bc_play_rate DOUBLE PRECISION ENCODE bytedict,
+  bc_video BIGINT ENCODE lzo,
+  bc_video_duration INTEGER ENCODE delta32k,
+  bc_video_engagement_1 DOUBLE PRECISION ENCODE bytedict,
+  bc_video_engagement_100 DOUBLE PRECISION ENCODE bytedict,
+  bc_video_engagement_25 DOUBLE PRECISION ENCODE bytedict,
+  bc_video_engagement_50 DOUBLE PRECISION ENCODE bytedict,
+  bc_video_engagement_75 DOUBLE PRECISION ENCODE bytedict,
+  bc_video_impression BIGINT ENCODE lzo,
+  bc_video_name VARCHAR(10000) ENCODE lzo,
+  bc_video_percent_viewed DOUBLE PRECISION ENCODE bytedict,
+  bc_video_seconds_viewed BIGINT ENCODE lzo,
+  bc_video_view INTEGER ENCODE lzo,
+  bc_video_reference_id VARCHAR(10000) NOT NULL ENCODE lzo DISTKEY,
+  bc_videoname VARCHAR(10000) ENCODE lzo,
+  bc_videotags VARCHAR(65535) ENCODE lzo,
+  bc_dt DATE ENCODE lzo,
+  bc_azvideoid BIGINT ENCODE lzo,
+  bc_azvideotype VARCHAR(100) ENCODE lzo,
+  bc_azbroadcaster VARCHAR(10000) ENCODE lzo
+)
+SORTKEY
+(
+  bc_video_reference_id
+);
+
+
+
+GRANT ALL
+                ON TABLE PUBLIC.bc_videos_rollup_backup
+                TO
+GROUP admin_group;
+
+GRANT SELECT
+                ON TABLE PUBLIC.bc_videos_rollup_backup
+                TO
+GROUP readonly;
+
+insert into  bc_videos_rollup_backup
+select *  from bc_videos_rollup;
+
+
+
 
 DELETE
 FROM bc_videos_rollup
@@ -27,7 +77,7 @@ WHERE bc_video_reference_id IN
     (SELECT DISTINCT bc_video_reference_id
      FROM bc_videos_rollup
      WHERE bc_dt >=
-         (SELECT max(bc_dt)-30
+         (SELECT max(bc_dt)-90
           FROM bc_videos_rollup)
        AND bc_video_reference_id IS NOT NULL);
 
@@ -99,6 +149,9 @@ WITH rankings AS
 
 
   */
+
+
+
 DELETE
 FROM zencoder_rollup
 WHERE zc_video_reference_id IN
@@ -355,5 +408,46 @@ echo "\n*******StartQuery\n".$sql."\n*******EndQuery\n";
 $rec = pg_query($connect,$sql);
 $rowsaffected=pg_affected_rows($rec);
 echo "Rows affected $rowsaffected \n\n";
+
+
+
+$sql="
+select case when (select count(1) from bc_videos_rollup) >= (select count(1) from bc_videos_rollup_backup) then 'All Is Good' else 'PROBLEM 'end ISTHEREAPROBLEM
+";
+if ($debug==1)
+{
+echo "\n*******StartQuery\n".$sql."\n*******EndQuery\n";
+}
+$rec = pg_query($connect,$sql);
+
+while ($row = pg_fetch_row($rec)) 
+    {
+                  $ISTHEREAPROBLEM = $row[0];
+                  if ($ISTHEREAPROBLEM=="PROBLEM")
+                  {
+
+                    $sql="
+                    DROP TABLE IF EXISTS bc_videos_rollup_problemtable;
+                    alter table bc_videos_rollup
+                    rename to bc_videos_rollup_problemtable;
+                    alter table bc_videos_rollup_backup
+                    rename to bc_videos_rollup;
+
+                    ";
+
+                    if ($debug==1)
+                    {
+                    echo "\nPROBLEM OCCURED REVERTING bc_videos_rollup to backup\n*******StartQuery\n".$sql."\n*******EndQuery\n";
+                    }
+                    $rec = pg_query($connect,$sql);
+
+                  }
+   }
+
+
+
+
+
+
 
 ?>
