@@ -30,7 +30,8 @@ curl_close($ch);
 file_put_contents($outputfile, $result);
 include './BrightCove/bcs3.php';
 include './BrightCove/AZData/LoadBroadcasterData.php';
-include './BrightCove/AZData/LoadSubscriptionData.php';
+#include './BrightCove/AZData/LoadSubscriptionData.php';
+#include './BrightCove/AZData/LoadUserFollow_UnFollowData.php';
 //curl "http://www.azubu.tv/login_check" -H "Origin: http://www.azubu.tv" -H "Accept-Encoding: gzip, deflate" -H "Accept-Language: en-US,en;q=0.8" -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.80 Safari/537.36" -H "Content-Type: application/x-www-form-urlencoded; charset=UTF-8" -H "Accept: application/json, text/plain, */*" -H "Referer: http://www.azubu.tv/" -H "Cookie: bm_monthly_unique=true; locale=en; NG_TRANSLATE_LANG_KEY="%"22en"%"22; bm_daily_unique=true; bm_sample_frequency=1; _gat=1; _gat_UA-38697080-1=1; _gat_UA-57082407-1=1; _gat_AzubuProperties=1; ads_bm_last_load_status=BLOCKING; bm_last_load_status=BLOCKING; _ga=GA1.2.731319598.1446537612; HTML_ViewerId=83f8a543-7918-c5c7-86d2-90a569fde081; HTML_VisitValueCookie=0|0|0|0|0|0|0|0|0|0|0|0|0; HTML_BitRateBucketCsv=0,0,0,0,0,0,0,0; AkamaiAnalytics_BrowserSessionId=e32e35b4-89d8-5996-a860-b1e53cb89801; HTML_VisitCountCookie=1; HTML_VisitIntervalStartTime=1447102136372; HTML_isPlayingCount=1" -H "Connection: keep-alive" -H "DNT: 1" --data "_username=stacey.beckett"%"40azubu.com&_password=bradley471&_type=azubu-login" --compressed
 
 ?>

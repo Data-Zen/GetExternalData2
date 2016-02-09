@@ -114,6 +114,7 @@ WHERE NOT EXISTS
      FROM bc_videos_rollup br
      WHERE br.bc_video_reference_id=b.video_reference_id)
   AND video_reference_id IS NOT NULL
+   and video_seconds_viewed< 4000000000  --Get rid of outliers
 GROUP BY video_reference_id;
 
  /*

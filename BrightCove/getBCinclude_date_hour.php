@@ -9,7 +9,7 @@
 //$fields = $argv[5];
 //if ($fields == "")
 //{
-	$fields="account,account.name,active_media,bytes_delivered,daily_unique_viewers,date_hour,drm_bytes_packaged,engagement_score,licenses_served,live_seconds_streamed,play_rate,player_load,video_impression,video_percent_viewed,video_seconds_viewed,video_view&";//}
+	$fields="account.name,active_media,bytes_delivered,daily_unique_viewers,date_hour,drm_bytes_packaged,engagement_score,licenses_served,live_seconds_streamed,play_rate,player_load,video_impression,video_percent_viewed,video_seconds_viewed,video_view&";//}
 	echo  "Dimensions: " . $dimensions. "\n";
 	echo  "Fields: " . $fields. "\n";
 

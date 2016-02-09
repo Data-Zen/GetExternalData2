@@ -9,7 +9,7 @@
 //$fields = $argv[5];
 //if ($fields == "")
 //{
-	$fields="account,account.name,device_type,engagement_score,play_rate,player_load,video_impression,video_percent_viewed,video_seconds_viewed,video_view&";//}
+	$fields="account.name,device_type,engagement_score,play_rate,player_load,video_impression,video_percent_viewed,video_seconds_viewed,video_view&";//}
 
 	echo  "Dimensions: " . $dimensions. "\n";
 	echo  "Fields: " . $fields. "\n";

@@ -30,23 +30,25 @@ if [[ $(hostname -s) = *paul* ]]; then
 fi
 
 
-daysback=1
+daysback=90
+daysforward=30
 #daysback=160
 let sleepv=1
 if [ "$backfill" -eq 1 ] ; then
 	daysback=500
 fi
-let loopcount=$daysback+7
+let loopcount=$daysback+$daysforward
 
 loop=${1:-$loopcount}
 a=1
+
 #enddate=`date +%Y-%m-%d`
 #startdate=`date -v-1d +%F`
 #echo "StartDate: " $startdate
 #echo  "EndDate: " $enddate
 cd $MyPath
   
-  php ./BrightCove/getBCtags_first.php 
+  php ./BrightCove/getBCtags_first.php    
 
 
 let errorloop=0
@@ -96,6 +98,9 @@ ELAPSED_TIME_ZC=$(($SECONDS - $START_TIME))
 START_TIME=$SECONDS
 php ./BrightCove/AZData/GetBroadcasterData_live.php 
 php ./BrightCove/AZData/GetBroadcasterData.php 
+php ./BrightCove/AZData/LoadUsersData.php
+php ./BrightCove/AZData/LoadSubscriptionData.php
+php ./BrightCove/AZData/LoadUserFollow_UnFollowData.php
 php ./BrightCove/AZData/FinalProcessing.php
 
 rm -rf /tmp/lock_GetExternalData
