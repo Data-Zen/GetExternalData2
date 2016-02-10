@@ -2,7 +2,7 @@
 
 
 date_default_timezone_set('UTC');//or change to whatever timezone you want
-
+include './BrightCove/credentials/BrightCoveCredentials.php';
 $connect = pg_connect($BrightCoveModifyCredentials);
 
 
