@@ -30,8 +30,8 @@ if [[ $(hostname -s) = *paul* ]]; then
 fi
 
 
-#daysback=90
-daysback=1   #CHANGE THIS!!!!!!!!!!!!!!!!!!!!!!!!!
+daysback=90
+#daysback=1   #CHANGE THIS!!!!!!!!!!!!!!!!!!!!!!!!!
 daysforward=30
 #daysback=160
 let sleepv=1
@@ -102,6 +102,7 @@ php ./BrightCove/AZData/GetBroadcasterData.php
 php ./BrightCove/AZData/LoadUsersData.php
 php ./BrightCove/AZData/LoadSubscriptionData.php
 php ./BrightCove/AZData/LoadUserFollow_UnFollowData.php
+php ./BrightCove/AZData/LoadEngagmentDashboardData.php
 php ./BrightCove/AZData/FinalProcessing.php
 
 rm -rf /tmp/lock_GetExternalData
