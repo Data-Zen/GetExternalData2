@@ -37,7 +37,7 @@ updated_at datetime ENCODE lzo,
 category_id INT ENCODE LZO,
 category_name VARCHAR(10000) ENCODE lzo,
 category_title VARCHAR(10000) ENCODE lzo
-)
+);
 
 copy EngagmentDashboardData
 from 's3://$S3bucketNameGFLDailyDumps/analytics_video_play.csv' with 

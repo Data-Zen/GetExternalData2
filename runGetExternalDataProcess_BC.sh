@@ -103,6 +103,7 @@ php ./BrightCove/AZData/LoadUsersData.php
 php ./BrightCove/AZData/LoadSubscriptionData.php
 php ./BrightCove/AZData/LoadUserFollow_UnFollowData.php
 php ./BrightCove/AZData/LoadEngagmentDashboardData.php
+php ./BrightCove/AZData/GetPayWizardData.php
 php ./BrightCove/AZData/FinalProcessing.php
 
 rm -rf /tmp/lock_GetExternalData
